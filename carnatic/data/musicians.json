@@ -208,6 +208,12 @@
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - MS Subbulakshmi",
           "composition_id": "maakelara_vicaaramu",
           "raga_id": "ravichandrika"
+        },
+        {
+          "url": "https://youtu.be/0Xg7HQFYwgk",
+          "label": "Jagadananda Karaka · Nattai · Adi - MS Subbulakshmi",
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata"
         }
       ]
     },
@@ -377,6 +383,12 @@
           "label": "Gitarthamu · Surutti · Adi - TM Krishna (older)",
           "composition_id": "gitarthamu",
           "raga_id": "surutti"
+        },
+        {
+          "url": "https://youtu.be/5MAI223JEVc",
+          "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata"
         }
       ]
     },
@@ -739,6 +751,86 @@
       "instrument": "violin",
       "bani": "mixed",
       "youtube": []
+    },
+    {
+      "id": "alathur_brothers",
+      "label": "Alathur Brothers",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Alathur_Brothers", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1911,
+      "died": 1980,
+      "era": "golden_age",
+      "instrument": "vocal",
+      "bani": "tyagaraja",
+      "youtube": [
+        {
+          "url": "https://youtu.be/mHjkUWyl1qQ",
+          "label": "Jagadananda Karaka · Nattai · Adi - Alathur Brothers",
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata"
+        }
+      ]
+    },
+    {
+      "id": "maharajapuram_santanam",
+      "label": "Maharajapuram Santanam",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Maharajapuram_Santhanam", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1928,
+      "died": 1992,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "tyagaraja",
+      "youtube": [
+        {
+          "url": "https://youtu.be/aS39XUjoAM4",
+          "label": "Jagadananda Karaka · Nattai · Adi - Maharajapuram Santanam",
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata"
+        }
+      ]
+    },
+    {
+      "id": "balamuralikrishna",
+      "label": "M. Balamuralikrishna",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/M._Balamuralikrishna", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1930,
+      "died": 2016,
+      "era": "living_pillars",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": [
+        {
+          "url": "https://youtu.be/D62Ey2Vnlxo",
+          "label": "Jagadananda Karaka · Nattai · Adi - M. Balamuralikrishna",
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata"
+        }
+      ]
+    },
+    {
+      "id": "nityashree_mahadevan",
+      "label": "Nityashree Mahadevan",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Nithyasree_Mahadevan", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "born": 1973,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "vocal",
+      "bani": "mixed",
+      "youtube": [
+        {
+          "url": "https://youtu.be/2aD_rWZnayo",
+          "label": "Jagadananda Karaka · Nattai · Adi - Nityashree Mahadevan",
+          "composition_id": "jagadananda_karaka",
+          "raga_id": "nata"
+        }
+      ]
     }
   ],
   "edges": [
