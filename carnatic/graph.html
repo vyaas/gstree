@@ -539,7 +539,15 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [
+        {
+          "vid": "3h_ltCBmNbs",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Madurai Mani Iyer",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "year": null
+        }
+      ]
     }
   },
   {
@@ -603,6 +611,13 @@ const elements = [
           "composition_id": null,
           "raga_id": null,
           "year": 1967
+        },
+        {
+          "vid": "HzT9NZEF1wo",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "year": null
         }
       ]
     }
@@ -646,7 +661,15 @@ const elements = [
       "label_tier": 1,
       "font_size": 15,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [
+        {
+          "vid": "Sft22WjB3FY",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - MS Subbulakshmi",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "year": null
+        }
+      ]
     }
   },
   {
@@ -674,6 +697,13 @@ const elements = [
           "composition_id": null,
           "raga_id": null,
           "year": 1967
+        },
+        {
+          "vid": "r5iWpW_m3Rk",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Ramnad Krishnan",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "year": null
         }
       ]
     }
@@ -851,7 +881,15 @@ const elements = [
       "label_tier": 2,
       "font_size": 11,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [
+        {
+          "vid": "BIEzjDD3pvA",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "year": null
+        }
+      ]
     }
   },
   {
@@ -872,7 +910,15 @@ const elements = [
       "label_tier": 2,
       "font_size": 11,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [
+        {
+          "vid": "Mb5cl_eWyWo",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Sanjay Subrahmanyan",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika",
+          "year": null
+        }
+      ]
     }
   },
   {
@@ -1957,6 +2003,15 @@ const ragas        = [
     "parent_raga": null,
     "wikipedia": "https://en.wikipedia.org/wiki/Natabhairavi",
     "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours"
+  },
+  {
+    "id": "ravichandrika",
+    "name": "Ravichandrika",
+    "aliases": [],
+    "melakarta": null,
+    "parent_raga": "harikambhoji",
+    "wikipedia": null,
+    "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada. Source: https://sujamusic.wordpress.com/ravichandrika/"
   }
 ];
 const composers    = [
@@ -2035,10 +2090,37 @@ const compositions = [
     "language": "telugu",
     "wikipedia": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
     "notes": "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus; a salutation to all great souls; traditionally sung last in the Pancharatna set"
+  },
+  {
+    "id": "maakelara_vicaaramu",
+    "title": "maakElaraa vicaaramu",
+    "composer_id": "tyagaraja",
+    "raga_id": "ravichandrika",
+    "tala": "deshadi",
+    "language": "telugu",
+    "wikipedia": null,
+    "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire. Notation source: http://www.shivkumar.org/music/maakelara.ram"
   }
 ];
-const compositionToNodes = {};
+const compositionToNodes = {
+  "maakelara_vicaaramu": [
+    "madurai_mani_iyer",
+    "semmangudi_srinivasa_iyer",
+    "ms_subbulakshmi",
+    "ramnad_krishnan",
+    "tm_krishna",
+    "sanjay_subrahmanyan"
+  ]
+};
 const ragaToNodes        = {
+  "ravichandrika": [
+    "madurai_mani_iyer",
+    "semmangudi_srinivasa_iyer",
+    "ms_subbulakshmi",
+    "ramnad_krishnan",
+    "tm_krishna",
+    "sanjay_subrahmanyan"
+  ],
   "natabhairavi": [
     "abhishek_raghuram"
   ]

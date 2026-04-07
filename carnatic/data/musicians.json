@@ -102,7 +102,14 @@
       "era": "golden_age",
       "instrument": "vocal",
       "bani": "madurai",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/3h_ltCBmNbs",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Madurai Mani Iyer",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika"
+        }
+      ]
     },
     {
       "id": "gnb",
@@ -140,6 +147,12 @@
           "url": "https://youtu.be/x5ExBQpVy2k",
           "label": "Mylapore Fine Arts Club · 26 Nov 1967",
           "year": 1967
+        },
+        {
+          "url": "https://youtu.be/HzT9NZEF1wo",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Semmangudi Srinivasa Iyer",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika"
         }
       ]
     },
@@ -163,7 +176,14 @@
       "era": "disseminator",
       "instrument": "vocal",
       "bani": "dhanammal",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/Sft22WjB3FY",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - MS Subbulakshmi",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika"
+        }
+      ]
     },
     {
       "id": "ramnad_krishnan",
@@ -179,6 +199,12 @@
           "url": "https://youtu.be/AnNb0zRmauM",
           "label": "Wesleyan University, 1967 \u2014 with T. Viswanathan",
           "year": 1967
+        },
+        {
+          "url": "https://youtu.be/r5iWpW_m3Rk",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Ramnad Krishnan",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika"
         }
       ]
     },
@@ -274,7 +300,14 @@
       "era": "contemporary",
       "instrument": "vocal",
       "bani": "semmangudi",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/BIEzjDD3pvA",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika"
+        }
+      ]
     },
     {
       "id": "sanjay_subrahmanyan",
@@ -285,7 +318,14 @@
       "era": "contemporary",
       "instrument": "vocal",
       "bani": "semmangudi",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/Mb5cl_eWyWo",
+          "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Sanjay Subrahmanyan",
+          "composition_id": "maakelara_vicaaramu",
+          "raga_id": "ravichandrika"
+        }
+      ]
     },
     {
       "id": "bombay_jayashri",

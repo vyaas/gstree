@@ -134,6 +134,15 @@
       "parent_raga": null,
       "wikipedia": "https://en.wikipedia.org/wiki/Natabhairavi",
       "notes": "20th melakarta; parent of Bhairavi and Sindhu Bhairavi; evokes pathos and devotion; associated with evening hours"
+    },
+    {
+      "id": "ravichandrika",
+      "name": "Ravichandrika",
+      "aliases": [],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "wikipedia": null,
+      "notes": "Janya of Harikambhoji (28th melakarta); vakra raga — ārohana S R2 G3 M1 D2 N2 D2 S', avarohana S' N2 D2 M1 G3 R2 S; rare raga, sung mostly in early concert segments; best known for two Tyagaraja kritis: Makelara and Nirvadhi Sukhada. Source: https://sujamusic.wordpress.com/ravichandrika/"
     }
   ],
   "composers": [
@@ -212,6 +221,16 @@
       "language": "telugu",
       "wikipedia": "https://en.wikipedia.org/wiki/Endaro_Mahanubhavulu",
       "notes": "Pancharatna kriti; considered the crown jewel of the Tyagaraja corpus; a salutation to all great souls; traditionally sung last in the Pancharatna set"
+    },
+    {
+      "id": "maakelara_vicaaramu",
+      "title": "maakElaraa vicaaramu",
+      "composer_id": "tyagaraja",
+      "raga_id": "ravichandrika",
+      "tala": "deshadi",
+      "language": "telugu",
+      "wikipedia": null,
+      "notes": "Tyagaraja kriti in the rare raga Ravichandrika; one of the two principal compositions that define this raga in the concert repertoire. Notation source: http://www.shivkumar.org/music/maakelara.ram"
     }
   ]
 }
