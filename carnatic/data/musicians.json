@@ -42,7 +42,12 @@
       "era": "bridge",
       "instrument": "veena",
       "bani": "dhanammal",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/VEB9vZpIIR4",
+          "label": "Veena recitals collection — Vina Dhanammal"
+        }
+      ]
     },
     {
       "id": "patnam_subramanya_iyer",
@@ -119,7 +124,16 @@
       "era": "golden_age",
       "instrument": "vocal",
       "bani": "semmangudi",
-      "youtube": []
+      "youtube": [
+        {
+          "url": "https://youtu.be/QBn1fuosWIs",
+          "label": "Music Academy, Madras · December Season 1966"
+        },
+        {
+          "url": "https://youtu.be/x5ExBQpVy2k",
+          "label": "Mylapore Fine Arts Club · 26 Nov 1967"
+        }
+      ]
     },
     {
       "id": "musiri_subramania_iyer",
