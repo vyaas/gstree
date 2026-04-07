@@ -330,4 +330,4 @@ Add new values freely — each gets a distinct node shape in the graph automatic
 - **Zoom-tiered labels** — Trinity/Bridge always visible; Golden Age/Disseminators at
   zoom ≥ 0.45; others at zoom ≥ 0.72.
 
-![Graph screenshot](../image.png)
+![Graph screenshot](../screenshots/screenshot_00.png)
