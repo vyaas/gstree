@@ -36,7 +36,7 @@
     {
       "id": "vina_dhanammal",
       "label": "Vina Dhanammal",
-      "wikipedia": "https://en.wikipedia.org/wiki/Vina_Dhanammal",
+      "wikipedia": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
       "born": 1867,
       "died": 1938,
       "era": "bridge",
@@ -47,7 +47,7 @@
     {
       "id": "patnam_subramanya_iyer",
       "label": "Patnam Subramanya Iyer",
-      "wikipedia": "https://en.wikipedia.org/wiki/Patnam_Subramanya_Iyer",
+      "wikipedia": "https://en.wikipedia.org/wiki/Patnam_Subramania_Iyer",
       "born": 1845,
       "died": 1902,
       "era": "bridge",
@@ -58,7 +58,7 @@
     {
       "id": "maha_vaidyanatha_sivan",
       "label": "Maha Vaidyanatha Sivan",
-      "wikipedia": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Sivan",
+      "wikipedia": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
       "born": 1844,
       "died": 1893,
       "era": "bridge",
@@ -337,7 +337,7 @@
     {
       "id": "calcutta_ks_krishnamurthi",
       "label": "Calcutta KS Krishnamurthi",
-      "wikipedia": "https://en.wikipedia.org/wiki/Calcutta_K._S._Krishnamurthy",
+      "wikipedia": "https://en.wikipedia.org/wiki/Sanjay_Subrahmanyan",
       "born": null,
       "died": 1999,
       "era": "living_pillars",
@@ -392,7 +392,7 @@
     {
       "id": "cs_sankarasivam",
       "label": "C.S. Sankarasivam",
-      "wikipedia": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Sankarasivan",
+      "wikipedia": "https://en.wikipedia.org/wiki/Ramanathapuram_C._S._Murugabhoopathy",
       "born": null,
       "died": null,
       "era": "bridge",
@@ -425,7 +425,7 @@
     {
       "id": "jayammal",
       "label": "Jayammal",
-      "wikipedia": "https://en.wikipedia.org/wiki/Jayammal",
+      "wikipedia": "https://en.wikipedia.org/wiki/Veenai_Dhanammal",
       "born": 1890,
       "died": 1967,
       "era": "bridge",
@@ -458,7 +458,7 @@
     {
       "id": "swaminatha_pillai",
       "label": "Tiruppamparam Swaminatha Pillai",
-      "wikipedia": "https://en.wikipedia.org/wiki/Tiruppampuram_Swaminatha_Pillai",
+      "wikipedia": "https://en.wikipedia.org/wiki/T._Viswanathan",
       "born": null,
       "died": null,
       "era": "bridge",
@@ -733,6 +733,13 @@
       "confidence": 0.97,
       "source_url": "https://en.wikipedia.org/wiki/T._Viswanathan",
       "note": "principal guru; ~20 years of study; innovator of 7-hole bamboo flute"
+    },
+    {
+      "source": "maha_vaidyanatha_sivan",
+      "target": "musiri_subramania_iyer",
+      "confidence": 0.8,
+      "source_url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
+      "note": "via T.S. Sabhesha Iyer (2-hop); Wikipedia prose: Sabhesh Iyer disciple of Maha Vaidyanatha Iyer, Musiri disciple of Sabhesh Iyer"
     }
   ]
 }

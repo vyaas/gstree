@@ -35,6 +35,32 @@ carnatic/
 4. Use `note` to qualify: `"first guru"`, `"principal guru"`, `"gurukula training, N years"`
 5. **Do not infer edges from shared bani** — require explicit lineage statement
 
+## Wikipedia URL health — optional audit
+Run this at the start of a session (or on request) to surface broken links for human attention.
+The agent **reports** broken URLs; it does **not** automatically hunt replacements unless asked.
+```bash
+python3 -c "
+import urllib.request, json, time
+with open('carnatic/data/musicians.json') as f: data = json.load(f)
+for node in data['nodes']:
+    url = node['wikipedia']
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        resp = urllib.request.urlopen(req, timeout=8)
+        final = resp.geturl()
+        status = 'REDIRECT → ' + final if final != url else 'OK'
+    except Exception as e:
+        status = '404'
+    if status != 'OK':
+        print(f\"{status:40s}  {node['id']}  {url}\")
+    time.sleep(0.25)
+"
+```
+- **404** lines = stub or wrong title; flag in Open questions below for community attention
+- **REDIRECT** lines = URL works but should be updated to the canonical final URL
+- Nodes with no own Wikipedia page are valid; their `wikipedia` field should point to the
+  page that most prominently mentions them (e.g. a parent's article)
+
 ## Adding YouTube recordings
 - Links **must be annotated** with the video title (URL alone is not enough)
 - Parse title → identify artist(s) → match to existing node `label`
@@ -75,11 +101,22 @@ YouTube embeds require localhost — never open graph.html as a file:// URL.
 - **Kanchipuram Naina Pillai** added — taught both Brinda and Muktha.
 
 ### Still open
+
+#### Wikipedia URL health (last checked 2026-04-07)
+Nodes whose `wikipedia` field has no own article — flagged for community attention:
+| node id | status | note |
+|---|---|---|
+| `jayammal` | no own page | points to `Veenai_Dhanammal` (mentioned there) |
+| `kamakshi_dhanammal` | no own page | points to `Veenai_Dhanammal` |
+| `swaminatha_pillai` | no own page | points to `T._Viswanathan` (mentioned there) |
+| `calcutta_ks_krishnamurthi` | no own page | points to `Sanjay_Subrahmanyan` (mentioned there) |
+| `subbaraya_sastri` | disambig page | `Subbaraya_Sastri` resolves but is a disambiguation — verify correct target |
+| `kanchipuram_naina_pillai` | disambig page | `Kanchipuram_Naina_Pillai` resolves but is a disambiguation — verify correct target |
+
+#### Lineage / data gaps
 - **T. Ranganathan** (mridangam, 1925–1987) — no Wikipedia article; excluded. Re-check
-  periodically; if a page appears, add him under `bridge`/`golden_age` mridangam.
+  periodically; if a page appears, add him under `golden_age` mridangam.
 - **Subbaraya Sastri dates** (set to 1803–1876) — verify against a primary source.
-- **Kanchipuram Naina Pillai Wikipedia URL** — current URL may not resolve; verify and
-  correct if needed.
 - **MS Subbulakshmi bani=dhanammal** — confirmed stylistically via T. Brinda; not a direct
   Dhanammal tutelage. The field is correct but worth a `note` on the node if confusion arises.
 - **Madurai Mani Iyer** lineage before Muthiah Bhagavatar — unestablished.
@@ -90,10 +127,14 @@ YouTube embeds require localhost — never open graph.html as a file:// URL.
   Vaidyanathan not yet assessed for significance.
 - **GNB lineage** downstream of ML Vasanthakumari not yet mapped.
 - **Lalgudi Jayaraman's guru** (Tirukodikaval Krishna Iyer) not yet a node.
-- **Lakshmiratnam** (Dhanammal's daughter, third daughter) — taught both Brinda and Muktha
-  after Naina Pillai. Not yet a node; assess significance.
+- **Lakshmiratnam** (Dhanammal's third daughter) — taught both Brinda and Muktha after
+  Naina Pillai. Not yet a node; assess significance.
 - **Walajapet Balakrishna Das ("Padam Baladas")** — taught Dhanammal; repository of
   Kshetrayya padams. Not yet a node; assess significance.
 - **Satanur Pancanatha Iyer** — also taught Dhanammal. Not yet a node; assess significance.
 - **Abdul Karim Khan** (Kirana Gharana) — learnt Carnatic songs from Dhanammal and released
   discs. Cross-tradition link; assess whether it belongs in this graph.
+- **T.S. Sabhesha Iyer** — intermediate between Maha Vaidyanatha Iyer and Musiri Subramania
+  Iyer (confirmed by Wikipedia). Currently a 2-hop edge; add as node if significance warrants.
+- **Maha Vaidyanatha Iyer lineage** — Wikipedia reveals his students include GNB, K.S.
+  Narayanaswamy, S. Ramanathan (via Sabhesha Iyer at Annamalai University). Edges not yet added.
