@@ -490,6 +490,39 @@
       "instrument": "bharatanatyam",
       "bani": "dhanammal",
       "youtube": []
+    },
+    {
+      "id": "gjr_krishnan",
+      "label": "G.J.R. Krishnan",
+      "wikipedia": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": "lalgudi",
+      "youtube": []
+    },
+    {
+      "id": "lalgudi_vijayalakshmi",
+      "label": "Lalgudi Vijayalakshmi",
+      "wikipedia": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": "lalgudi",
+      "youtube": []
+    },
+    {
+      "id": "a_kanyakumari",
+      "label": "A. Kanyakumari",
+      "wikipedia": "https://en.wikipedia.org/wiki/A._Kanyakumari",
+      "born": null,
+      "died": null,
+      "era": "contemporary",
+      "instrument": "violin",
+      "bani": "mixed",
+      "youtube": []
     }
   ],
   "edges": [
@@ -754,6 +787,20 @@
       "confidence": 0.8,
       "source_url": "https://en.wikipedia.org/wiki/Maha_Vaidyanatha_Iyer",
       "note": "via T.S. Sabhesha Iyer (2-hop); Wikipedia prose: Sabhesh Iyer disciple of Maha Vaidyanatha Iyer, Musiri disciple of Sabhesh Iyer"
+    },
+    {
+      "source": "lalgudi_jayaraman",
+      "target": "gjr_krishnan",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/G._J._R._Krishnan",
+      "note": "son and disciple; primary carrier of Lalgudi bani; Sangita Kalanidhi 2022"
+    },
+    {
+      "source": "lalgudi_jayaraman",
+      "target": "lalgudi_vijayalakshmi",
+      "confidence": 0.99,
+      "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
+      "note": "daughter and disciple; trained under father after initial training from grandfather Lalgudi Gopala Iyer; Sangita Kalanidhi 2022"
     }
   ]
 }
