@@ -1,4 +1,4 @@
-![GSTree — Carnatic Guru-Shishya Tree knowledge graph](screenshots/screenshot_00.png)
+![GSTree — Carnatic Guru-Shishya Tree knowledge graph](screenshots/screenshot_01.png)
 
 # Guru-Shishya Tree
 
