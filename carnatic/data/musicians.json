@@ -226,11 +226,6 @@
       "bani": "semmangudi",
       "youtube": [
         {
-          "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 — with T. Viswanathan",
-          "year": 1967
-        },
-        {
           "url": "https://youtu.be/r5iWpW_m3Rk",
           "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - Ramnad Krishnan",
           "composition_id": "maakelara_vicaaramu",
@@ -315,13 +310,7 @@
       "era": "living_pillars",
       "instrument": "flute",
       "bani": "dhanammal",
-      "youtube": [
-        {
-          "url": "https://youtu.be/AnNb0zRmauM",
-          "label": "Wesleyan University, 1967 — with Ramnad Krishnan",
-          "year": 1967
-        }
-      ]
+      "youtube": []
     },
     {
       "id": "palghat_mani_iyer",

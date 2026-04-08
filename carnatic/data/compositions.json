@@ -428,6 +428,72 @@
         {"url": "https://en.wikipedia.org/wiki/Mohanam", "label": "Wikipedia", "type": "wikipedia"}
       ],
       "notes": "Janya of Harikambhoji (28th melakarta); audava raga (5 notes ascending and descending, no M or N); ārohana S R2 G3 P D2 S, avarohana S D2 P G3 R2 S; evokes joy, beauty, and devotion; one of the most popular pentatonic ragas in the Carnatic canon"
+    },
+    {
+      "id": "harikambhoji",
+      "name": "Harikambhoji",
+      "aliases": ["Hari Kambhoji"],
+      "melakarta": 28,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Harikambhoji", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "28th melakarta; equivalent to the Western Mixolydian mode; ārohana S R2 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; parent of Kambhoji, Khamas, Surutti, Sahana, Mohanam, Bahudari, Kedaram, Begada, Ravichandrika, and Kapi among others; associated with bhakti and grandeur"
+    },
+    {
+      "id": "jayamanohari",
+      "name": "Jayamanohari",
+      "aliases": ["Jaya Manohari"],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Jayamanohari", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Harikambhoji (28th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R2 G3 M1 D2 N2 S, avarohana S N2 D2 P M1 G3 R2 S; evokes joy and devotion; associated with Tyagaraja's 'Yagnadulu Sukhamanu'"
+    },
+    {
+      "id": "hamsanadam",
+      "name": "Hamsanadam",
+      "aliases": ["Hamsa Nadam"],
+      "melakarta": null,
+      "parent_raga": "mechakalyani",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Hamsanadam", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes ascending and descending); ārohana S G3 M2 P N3 S, avarohana S N3 P M2 G3 S; evokes grandeur and devotion; associated with Tyagaraja's 'Bantureeti Kolu'"
+    },
+    {
+      "id": "keeravani",
+      "name": "Keeravani",
+      "aliases": ["Kiravani"],
+      "melakarta": 21,
+      "parent_raga": null,
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Keeravani", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "21st melakarta; ārohana S R2 G2 M1 P D1 N3 S, avarohana S N3 D1 P M1 G2 R2 S; equivalent to the Western harmonic minor scale; evokes pathos and longing; associated with Tyagaraja's 'Kaligiyunte'"
+    },
+    {
+      "id": "behag",
+      "name": "Behag",
+      "aliases": ["Bilahari Behag"],
+      "melakarta": null,
+      "parent_raga": "harikambhoji",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Behag_(Carnatic_raga)", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Harikambhoji (28th melakarta); bhashanga vakra raga admitting both M1 and M2; ārohana S G3 M1 P N2 S, avarohana S N2 D2 P M1 G3 M1 R2 S; evokes romance and longing; a favourite raga for javalis and padams; associated with Patnam Subramanya Iyer's 'Samayamide Rara'"
+    },
+    {
+      "id": "sowrashtram",
+      "name": "Sowrashtram",
+      "aliases": ["Saurashtra", "Saurashtram"],
+      "melakarta": null,
+      "parent_raga": "mayamalavagowla",
+      "sources": [
+        {"url": "https://en.wikipedia.org/wiki/Sowrashtram", "label": "Wikipedia", "type": "wikipedia"}
+      ],
+      "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'"
     }
   ],
   "composers": [
@@ -1133,6 +1199,78 @@
         {"url": "https://en.wikipedia.org/wiki/Kshetrayya", "label": "Wikipedia — Kshetrayya", "type": "wikipedia"}
       ],
       "notes": "Padam by Kshetrayya in Mohanam; Misra Chapu tala; part of the Kshetrayya padam tradition addressed to Muvvagopala"
+    },
+    {
+      "id": "yagnadulu_sukhamanu",
+      "title": "Yagnadulu Sukhamanu",
+      "composer_id": "tyagaraja",
+      "raga_id": "jayamanohari",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Jayamanohari; Adi tala; one of the principal compositions defining this raga in the concert repertoire"
+    },
+    {
+      "id": "enduku_nirdaya",
+      "title": "Enduku Nirdaya",
+      "composer_id": "tyagaraja",
+      "raga_id": "harikambhoji",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Harikambhoji; Adi tala"
+    },
+    {
+      "id": "bantureeti_kolu",
+      "title": "Bantureeti Kolu",
+      "composer_id": "tyagaraja",
+      "raga_id": "hamsanadam",
+      "tala": "deshadi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Hamsanadam; Deshadi tala; one of the principal compositions defining this raga"
+    },
+    {
+      "id": "kaligiyunte",
+      "title": "Kaligiyunte",
+      "composer_id": "tyagaraja",
+      "raga_id": "keeravani",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Tyagaraja kriti in Keeravani; Adi tala; one of the principal compositions defining this raga"
+    },
+    {
+      "id": "samayamide_rara",
+      "title": "Samayamide Rara",
+      "composer_id": "patnam_subramanya_iyer",
+      "raga_id": "behag",
+      "tala": "rupakam",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Javali by Patnam Subramanya Iyer in Behag; Rupakam tala; one of the most celebrated javalis in the concert repertoire"
+    },
+    {
+      "id": "ni_nama_roopamulaku",
+      "title": "Ni Nama Roopamulaku",
+      "composer_id": "tyagaraja",
+      "raga_id": "sowrashtram",
+      "tala": "adi",
+      "language": "telugu",
+      "sources": [
+        {"url": "https://www.karnatik.com/", "label": "Karnatik.com", "type": "archive"}
+      ],
+      "notes": "Mangalam by Tyagaraja in Sowrashtram; Adi tala; traditionally sung to close a concert"
     }
   ]
 }
