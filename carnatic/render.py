@@ -448,26 +448,17 @@ def render_html(
   #perf-list  {{ list-style: none; margin-top: 4px; max-height: 220px; overflow-y: auto; }}
   #perf-list li {{
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
-    font-size: 0.74rem; color: var(--fg2);
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    gap: 1px 5px; line-height: 1.4;
+    cursor: pointer; color: var(--fg2); font-size: 0.74rem;
+    display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
   }}
   #perf-list li:last-child {{ border-bottom: none; }}
-  .perf-play   {{
-    grid-column: 1; grid-row: 1;
-    color: var(--green); cursor: pointer; flex-shrink: 0;
-    align-self: start; padding-top: 1px;
-  }}
-  .perf-play:hover {{ color: var(--aqua); }}
+  #perf-list li:hover  {{ color: var(--yellow); }}
+  #perf-list li.playing {{ color: var(--aqua); }}
   .perf-title  {{
-    grid-column: 2; grid-row: 1;
     color: var(--yellow); font-weight: bold;
-    word-break: break-word; min-width: 0;
+    word-break: break-word;
   }}
   .perf-raga   {{
-    grid-column: 2; grid-row: 2;
     color: var(--fg3); font-size: 0.70rem;
     display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
   }}
@@ -640,6 +631,42 @@ def render_html(
   .trail-play {{ flex-shrink: 0; color: var(--green); cursor: pointer; margin-top: 1px; }}
   .trail-play:hover {{ color: var(--aqua); }}
   .trail-label {{ color: var(--fg3); font-size: 0.72rem; width: 100%; padding-left: 35px; }}
+
+  /* ── dual search boxes ── */
+  .search-group {{
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }}
+  .search-wrap {{
+    position: relative;
+  }}
+  .search-input {{
+    background: var(--bg2); color: var(--fg2); border: 1px solid var(--bg3);
+    padding: 4px 10px; font-family: inherit; font-size: 0.75rem;
+    cursor: text; border-radius: 2px; width: 200px;
+  }}
+  .search-input:focus {{
+    outline: none; border-color: var(--yellow);
+  }}
+  .search-dropdown {{
+    position: absolute; top: 100%; left: 0; width: 100%;
+    background: var(--bg1); border: 1px solid var(--bg3);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    max-height: 280px; overflow-y: auto; z-index: 950;
+  }}
+  .search-result-item {{
+    padding: 6px 10px; cursor: pointer;
+    border-bottom: 1px solid var(--bg2);
+    font-size: 0.78rem;
+  }}
+  .search-result-item:last-child {{ border-bottom: none; }}
+  .search-result-item:hover,
+  .search-result-item.active {{
+    background: var(--bg2); color: var(--yellow);
+  }}
+  .search-result-secondary {{
+    font-size: 0.70rem; color: var(--gray); margin-top: 2px;
+  }}
 </style>
 </head>
 <body>
@@ -647,6 +674,18 @@ def render_html(
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
   <span class="stats">{node_count} musicians · {edge_count} lineage edges</span>
+  <div class="search-group">
+    <div class="search-wrap" id="musician-search-wrap">
+      <input id="musician-search-input" class="search-input" type="text"
+             placeholder="&#128269; Search musician&#8230;" autocomplete="off" spellcheck="false">
+      <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+    </div>
+    <div class="search-wrap" id="bani-search-wrap">
+      <input id="bani-search-input" class="search-input" type="text"
+             placeholder="&#9833; Search composition / raga&#8230;" autocomplete="off" spellcheck="false">
+      <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
+    </div>
+  </div>
   <div class="controls">
     <button onclick="cy.fit()">Fit</button>
     <button onclick="cy.reset()">Reset</button>
@@ -698,12 +737,6 @@ def render_html(
     <!-- ── Bani Flow panel ── -->
     <div class="panel" id="bani-flow-panel">
       <h3>Bani Flow &#9835;</h3>
-      <select id="bani-comp-select">
-        <option value="">&#8212; Filter by Composition &#8212;</option>
-      </select>
-      <select id="bani-raga-select">
-        <option value="">&#8212; Filter by Raga &#8212;</option>
-      </select>
       <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
       <div id="listening-trail">
         <div id="trail-composer-label"></div>
@@ -1016,12 +1049,10 @@ function buildPerfPanel(nodeId) {{
 
   perfs.forEach(p => {{
     const li = document.createElement('li');
-
-    const playSpan = document.createElement('span');
-    playSpan.className = 'perf-play';
-    playSpan.textContent = '▶';
-    playSpan.title = `Play from ${{p.timestamp || '0:00'}}`;
-    playSpan.addEventListener('click', () =>
+    li.dataset.vid = p.video_id;
+    li.className   = playerRegistry.has(p.video_id) ? 'playing' : '';
+    li.title = `Play from ${{p.timestamp || '0:00'}}`;
+    li.addEventListener('click', () =>
       openOrFocusPlayer(p.video_id, p.display_title, p.title, p.offset_seconds));
 
     const titleSpan = document.createElement('span');
@@ -1043,9 +1074,9 @@ function buildPerfPanel(nodeId) {{
     linkA.target = '_blank';
     linkA.textContent = (p.timestamp ? p.timestamp + ' ↗' : '↗');
     linkA.title = 'Open in YouTube at this timestamp';
+    linkA.addEventListener('click', e => e.stopPropagation());
     ragaSpan.appendChild(linkA);
 
-    li.appendChild(playSpan);
     li.appendChild(titleSpan);
     li.appendChild(ragaSpan);
     perfList.appendChild(li);
@@ -1325,40 +1356,6 @@ function toggleLayout() {{
 const nodeBorn = {{}};
 cy.nodes().forEach(n => {{ nodeBorn[n.id()] = n.data('born'); }});
 
-// Populate dropdowns (entries that have tagged recordings OR structured performances)
-(function () {{
-  const compSel = document.getElementById('bani-comp-select');
-  const ragaSel = document.getElementById('bani-raga-select');
-
-  const compOpts = [];
-  compositions.forEach(c => {{
-    const hasNode = compositionToNodes[c.id] && compositionToNodes[c.id].length > 0;
-    const hasPerf = compositionToPerf[c.id]  && compositionToPerf[c.id].length  > 0;
-    if (hasNode || hasPerf) compOpts.push({{ id: c.id, text: c.title }});
-  }});
-  compOpts.sort((a, b) => a.text.localeCompare(b.text));
-  compOpts.forEach(o => {{
-    const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.textContent = o.text;
-    compSel.appendChild(opt);
-  }});
-
-  const ragaOpts = [];
-  ragas.forEach(r => {{
-    const hasNode = ragaToNodes[r.id] && ragaToNodes[r.id].length > 0;
-    const hasPerf = ragaToPerf[r.id]  && ragaToPerf[r.id].length  > 0;
-    if (hasNode || hasPerf) ragaOpts.push({{ id: r.id, text: r.name }});
-  }});
-  ragaOpts.sort((a, b) => a.text.localeCompare(b.text));
-  ragaOpts.forEach(o => {{
-    const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.textContent = o.text;
-    ragaSel.appendChild(opt);
-  }});
-}})();
-
 let activeBaniFilter = null; // {{ type: 'comp'|'raga', id: string }}
 
 function applyBaniFilter(type, id) {{
@@ -1527,24 +1524,160 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
 function clearBaniFilter() {{
   activeBaniFilter = null;
   cy.elements().removeClass('faded highlighted bani-match');
-  document.getElementById('bani-comp-select').value = '';
-  document.getElementById('bani-raga-select').value = '';
+  document.getElementById('bani-search-input').value = '';
   document.getElementById('bani-clear').style.display = 'none';
   document.getElementById('listening-trail').style.display = 'none';
   applyZoomLabels();
 }}
 
-document.getElementById('bani-comp-select').addEventListener('change', function () {{
-  if (!this.value) {{ clearBaniFilter(); return; }}
-  document.getElementById('bani-raga-select').value = '';
-  applyBaniFilter('comp', this.value);
-}});
+// ── shared dropdown helper ────────────────────────────────────────────────────
+function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {{
+  let activeIdx = -1;
 
-document.getElementById('bani-raga-select').addEventListener('change', function () {{
-  if (!this.value) {{ clearBaniFilter(); return; }}
-  document.getElementById('bani-comp-select').value = '';
-  applyBaniFilter('raga', this.value);
-}});
+  function renderItems(items) {{
+    dropdownEl.innerHTML = '';
+    activeIdx = -1;
+    if (items.length === 0) {{
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.style.color = 'var(--gray)';
+      div.textContent = 'no match';
+      dropdownEl.appendChild(div);
+      dropdownEl.style.display = 'block';
+      return;
+    }}
+    items.forEach((item, i) => {{
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      // primary line
+      const primary = document.createElement('div');
+      primary.textContent = item.primary;
+      if (item.primaryColor) primary.style.color = item.primaryColor;
+      div.appendChild(primary);
+      // secondary line
+      if (item.secondary) {{
+        const sec = document.createElement('div');
+        sec.className = 'search-result-secondary';
+        sec.textContent = item.secondary;
+        div.appendChild(sec);
+      }}
+      div.addEventListener('mousedown', e => {{
+        e.preventDefault(); // prevent blur before click
+        onSelect(item);
+        inputEl.value = '';
+        dropdownEl.style.display = 'none';
+      }});
+      div.addEventListener('mouseover', () => setActive(i));
+      dropdownEl.appendChild(div);
+    }});
+    dropdownEl.style.display = 'block';
+  }}
+
+  function setActive(idx) {{
+    const items = dropdownEl.querySelectorAll('.search-result-item');
+    items.forEach((el, i) => el.classList.toggle('active', i === idx));
+    activeIdx = idx;
+  }}
+
+  inputEl.addEventListener('input', () => {{
+    const q = inputEl.value.trim();
+    if (!q) {{ dropdownEl.style.display = 'none'; return; }}
+    renderItems(getItems(q));
+  }});
+
+  inputEl.addEventListener('keydown', e => {{
+    const items = dropdownEl.querySelectorAll('.search-result-item');
+    if (e.key === 'ArrowDown') {{
+      e.preventDefault();
+      setActive(Math.min(activeIdx + 1, items.length - 1));
+    }} else if (e.key === 'ArrowUp') {{
+      e.preventDefault();
+      setActive(Math.max(activeIdx - 1, 0));
+    }} else if (e.key === 'Enter') {{
+      if (activeIdx >= 0 && activeIdx < items.length) {{
+        items[activeIdx].dispatchEvent(new MouseEvent('mousedown'));
+      }}
+    }} else if (e.key === 'Escape') {{
+      inputEl.value = '';
+      dropdownEl.style.display = 'none';
+    }}
+  }});
+
+  inputEl.addEventListener('blur', () => {{
+    setTimeout(() => {{ dropdownEl.style.display = 'none'; }}, 150);
+  }});
+}}
+
+// ── musician search ───────────────────────────────────────────────────────────
+(function() {{
+  const input    = document.getElementById('musician-search-input');
+  const dropdown = document.getElementById('musician-search-dropdown');
+
+  function getItems(q) {{
+    const ql = q.toLowerCase();
+    const results = [];
+    cy.nodes().forEach(n => {{
+      const d = n.data();
+      if (d.label.toLowerCase().includes(ql)) {{
+        results.push({{
+          id:           d.id,
+          primary:      d.label,
+          primaryColor: d.color,
+          secondary:    [d.lifespan, d.era_label, d.instrument, d.bani]
+                          .filter(Boolean).join(' \u00b7 '),
+        }});
+      }}
+    }});
+    results.sort((a, b) => a.primary.localeCompare(b.primary));
+    return results.slice(0, 8);
+  }}
+
+  makeDropdown(input, dropdown, getItems, item => {{
+    const node = cy.getElementById(item.id);
+    if (!node) return;
+    // Fire the existing tap handler
+    node.emit('tap');
+    // Pan and zoom to the node
+    cy.animate({{ fit: {{ eles: node, padding: 120 }}, duration: 400 }});
+  }});
+}})();
+
+// ── bani flow search ──────────────────────────────────────────────────────────
+(function() {{
+  const input    = document.getElementById('bani-search-input');
+  const dropdown = document.getElementById('bani-search-dropdown');
+
+  function getItems(q) {{
+    const ql = q.toLowerCase();
+    const results = [];
+
+    // Compositions first
+    compositions.forEach(c => {{
+      const hasNode = compositionToNodes[c.id] && compositionToNodes[c.id].length > 0;
+      const hasPerf = compositionToPerf[c.id]  && compositionToPerf[c.id].length  > 0;
+      if ((hasNode || hasPerf) && c.title.toLowerCase().includes(ql)) {{
+        results.push({{ type: 'comp', id: c.id, primary: '\u266a ' + c.title, secondary: null }});
+      }}
+    }});
+
+    // Ragas second
+    ragas.forEach(r => {{
+      const hasNode = ragaToNodes[r.id] && ragaToNodes[r.id].length > 0;
+      const hasPerf = ragaToPerf[r.id]  && ragaToPerf[r.id].length  > 0;
+      if ((hasNode || hasPerf) && r.name.toLowerCase().includes(ql)) {{
+        results.push({{ type: 'raga', id: r.id, primary: '\u25c8 ' + r.name, secondary: null }});
+      }}
+    }});
+
+    results.sort((a, b) => a.primary.localeCompare(b.primary));
+    return results.slice(0, 10);
+  }}
+
+  makeDropdown(input, dropdown, getItems, item => {{
+    input.value = item.primary; // show what is active
+    applyBaniFilter(item.type, item.id);
+  }});
+}})();
 </script>
 </body>
 </html>
