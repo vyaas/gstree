@@ -42,3 +42,4 @@ carnatic/data/cache/
 # graph.html is a derived artefact; track it so the repo is self-contained
 # (comment out the line below if you prefer not to commit it)
 # carnatic/graph.html
+carnatic/data/recordings.json.bak
