@@ -268,7 +268,7 @@
 
 <header>
   <h1>Carnatic · Guru-Shishya Parampara</h1>
-  <span class="stats">54 musicians · 41 lineage edges</span>
+  <span class="stats">56 musicians · 42 lineage edges</span>
   <div class="controls">
     <button onclick="cy.fit()">Fit</button>
     <button onclick="cy.reset()">Reset</button>
@@ -834,12 +834,20 @@ const elements = [
       "born": 1928,
       "color": "#689d6a",
       "shape": "ellipse",
-      "size": 56,
-      "degree": 1,
+      "size": 60,
+      "degree": 2,
       "label_tier": 1,
-      "font_size": 13,
+      "font_size": 14,
       "font_weight": "normal",
-      "tracks": []
+      "tracks": [
+        {
+          "vid": "zoYJH-SqwCI",
+          "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - ML Vasanthakumari",
+          "composition_id": "jalajaksha_varnam",
+          "raga_id": "hamsadhwani",
+          "year": null
+        }
+      ]
     }
   },
   {
@@ -2058,6 +2066,83 @@ const elements = [
   },
   {
     "data": {
+      "id": "hyderabad_brothers",
+      "label": "Hyderabad Brothers",
+      "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Hyderabad_Brothers",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        },
+        {
+          "url": "https://www.sruti.com/artist/hyderabad-brothers",
+          "label": "Sruti — artist profile",
+          "type": "article"
+        }
+      ],
+      "era": "living_pillars",
+      "era_label": "Living Pillars",
+      "instrument": "vocal",
+      "bani": "tyagaraja",
+      "lifespan": "b. None",
+      "born": null,
+      "color": "#b16286",
+      "shape": "ellipse",
+      "size": 48,
+      "degree": 0,
+      "label_tier": 2,
+      "font_size": 12,
+      "font_weight": "normal",
+      "tracks": [
+        {
+          "vid": "JUrGrAiQq1A",
+          "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Hyderabad Brothers",
+          "composition_id": "jalajaksha_varnam",
+          "raga_id": "hamsadhwani",
+          "year": null
+        }
+      ]
+    }
+  },
+  {
+    "data": {
+      "id": "sudha_ragunathan",
+      "label": "Sudha Ragunathan",
+      "url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+          "label": "Wikipedia",
+          "type": "wikipedia"
+        }
+      ],
+      "era": "living_pillars",
+      "era_label": "Living Pillars",
+      "instrument": "vocal",
+      "bani": "gnb",
+      "lifespan": "b. 1956",
+      "born": 1956,
+      "color": "#b16286",
+      "shape": "ellipse",
+      "size": 52,
+      "degree": 1,
+      "label_tier": 2,
+      "font_size": 12,
+      "font_weight": "normal",
+      "tracks": [
+        {
+          "vid": "8JPpSPRbql4",
+          "label": "jalajākṣi ninnēḍabāsi · Hamsadhwani · Adi - Sudha Ragunathan",
+          "composition_id": "jalajaksha_varnam",
+          "raga_id": "hamsadhwani",
+          "year": null
+        }
+      ]
+    }
+  },
+  {
+    "data": {
       "id": "tyagaraja→patnam_subramanya_iyer",
       "source": "tyagaraja",
       "target": "patnam_subramanya_iyer",
@@ -2505,6 +2590,17 @@ const elements = [
       "source_url": "https://en.wikipedia.org/wiki/Lalgudi_Vijayalakshmi",
       "note": "daughter and disciple; trained under father after initial training from grandfather Lalgudi Gopala Iyer; Sangita Kalanidhi 2022",
       "width": 3.465
+    }
+  },
+  {
+    "data": {
+      "id": "ml_vasanthakumari→sudha_ragunathan",
+      "source": "ml_vasanthakumari",
+      "target": "sudha_ragunathan",
+      "confidence": 0.95,
+      "source_url": "https://en.wikipedia.org/wiki/Sudha_Ragunathan",
+      "note": "principal guru; Sudha Ragunathan trained under MLV from an early age; carries the GNB bani forward",
+      "width": 3.3249999999999997
     }
   }
 ];
@@ -3280,9 +3376,45 @@ const ragas        = [
       }
     ],
     "notes": "Janya of Mayamalavagowla (15th melakarta); shadava-sampoorna raga (6 notes ascending, 7 descending); ārohana S R1 G3 M1 P N3 S, avarohana S N3 D1 P M1 G3 R1 S; evokes devotion and auspiciousness; traditionally used for mangalam compositions; associated with Tyagaraja's 'Ni Nama Roopamulaku'"
+  },
+  {
+    "id": "hamsadhwani",
+    "name": "Hamsadhwani",
+    "aliases": [
+      "Hansadhwani"
+    ],
+    "melakarta": null,
+    "parent_raga": "mechakalyani",
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Hamsadhwani",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      }
+    ],
+    "notes": "Janya of Mechakalyani (65th melakarta); audava raga (5 notes, no Madhyama or Dhaivata); ārohana S R2 G3 P N3 S, avarohana S N3 P G3 R2 S; evokes brightness, auspiciousness, and joy; a favourite opening raga for concerts; best known for Dikshitar's 'Vatapi Ganapatim' and the jalajAksha varnam of Maanambuchaavadi Venkatasubbaiyer"
   }
 ];
 const composers    = [
+  {
+    "id": "maanambuchaavadi_venkatasubbaiyer",
+    "name": "Maanambuchaavadi Venkatasubbaiyer",
+    "musician_node_id": null,
+    "born": null,
+    "died": null,
+    "sources": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Maanambuchaavadi_Venkatasubba_Iyer",
+        "label": "Wikipedia",
+        "type": "wikipedia"
+      },
+      {
+        "url": "https://www.karnatik.com/co1090.shtml",
+        "label": "Karnatik.com — composer profile",
+        "type": "archive"
+      }
+    ]
+  },
   {
     "id": "chinnaiah_pillai",
     "name": "Chinnaiah Pillai",
@@ -4329,6 +4461,27 @@ const compositions = [
       }
     ],
     "notes": "Mangalam by Tyagaraja in Sowrashtram; Adi tala; traditionally sung to close a concert"
+  },
+  {
+    "id": "jalajaksha_varnam",
+    "title": "jalajākṣi ninnēḍabāsi",
+    "composer_id": "maanambuchaavadi_venkatasubbaiyer",
+    "raga_id": "hamsadhwani",
+    "tala": "adi",
+    "language": "telugu",
+    "sources": [
+      {
+        "url": "https://www.shivkumar.org/music/varnams/jalajakshi.htm",
+        "label": "Shivkumar.org — notation and meaning",
+        "type": "archive"
+      },
+      {
+        "url": "https://www.karnatik.com/co1090.shtml",
+        "label": "Karnatik.com — composer profile (lists this varnam)",
+        "type": "archive"
+      }
+    ],
+    "notes": "Ata-tala varnam by Maanambuchaavadi Venkatasubbaiyer in Hamsadhwani; Adi tala; pallavi 'jalajakshi ninnedabasi chala marulu konnadira'; mudra 'Venkatesa'; one of the most frequently performed varnams in the concert repertoire; the karnatik.com source notes the composer took varnamettu-s left by Tyagaraja and fitted his own words"
   }
 ];
 const compositionToNodes = {
@@ -4346,7 +4499,17 @@ const compositionToNodes = {
     "alathur_brothers",
     "maharajapuram_santanam",
     "balamuralikrishna",
-    "nityashree_mahadevan"
+    "nityashree_mahadevan",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "jalajaksha_varnam": [
+    "ml_vasanthakumari",
+    "hyderabad_brothers",
+    "sudha_ragunathan"
   ],
   "gitarthamu": [
     "dk_pattammal",
@@ -4355,6 +4518,205 @@ const compositionToNodes = {
     "md_ramanathan",
     "kv_narayanaswamy",
     "s_sowmya"
+  ],
+  "telisenura": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "adiyokka_yugamu": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "parulanna_matta": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "mora_topu": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "pusadaramu": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "narimani": [
+    "t_brinda",
+    "t_muktha",
+    "vina_dhanammal"
+  ],
+  "yala_padare": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "ninnu_juchi": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "intha_chalamu": [
+    "vina_dhanammal"
+  ],
+  "himadri_sute": [
+    "vina_dhanammal"
+  ],
+  "nannu_brovu": [
+    "vina_dhanammal"
+  ],
+  "nenarunchinanu": [
+    "vina_dhanammal"
+  ],
+  "rama_nee_samanamevaru": [
+    "vina_dhanammal"
+  ],
+  "nijamarmamulanu": [
+    "vina_dhanammal"
+  ],
+  "brova_bharama": [
+    "vina_dhanammal"
+  ],
+  "sri_narada": [
+    "vina_dhanammal"
+  ],
+  "sri_raghuvara": [
+    "vina_dhanammal"
+  ],
+  "pattakura": [
+    "vina_dhanammal"
+  ],
+  "vadiga_gopaluni": [
+    "vina_dhanammal"
+  ],
+  "bale_balendu_bhushani": [
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "abhimanamennedu": [
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "bhajana_parulakela": [
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "sri_manimi_manohara": [
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "enduku_peddala": [
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "alarsara_paritapam": [
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "karuna_samudra": [
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "marubari_talalEnurA": [
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "evarani_nirnayancirera": [
+    "musiri_subramania_iyer",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "nama_kusumamulace": [
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "eti_janmamidi": [
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "cakkani_rajamargamulu": [
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "koluvamaregada": [
+    "dk_pattammal",
+    "ms_subbulakshmi",
+    "ramnad_raghavan"
+  ],
+  "lalite_kanci_nagara": [
+    "dk_pattammal"
+  ],
+  "callare_ramacandruniki": [
+    "dk_pattammal"
+  ],
+  "cittam_eppaDiyO": [
+    "dk_pattammal"
+  ],
+  "kshira_sagara_shayana": [
+    "ms_subbulakshmi",
+    "radha_viswanathan",
+    "ramnad_raghavan"
+  ],
+  "kuvalayakshiro": [
+    "ms_subbulakshmi",
+    "radha_viswanathan",
+    "ramnad_raghavan"
+  ],
+  "mamava_pattabhirama": [
+    "dk_pattammal",
+    "ms_subbulakshmi",
+    "ramnad_raghavan"
+  ],
+  "yagnadulu_sukhamanu": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "enduku_nirdaya": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "bantureeti_kolu": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "kaligiyunte": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "samayamide_rara": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "ni_nama_roopamulaku": [
+    "ramnad_krishnan",
+    "t_viswanathan"
   ]
 };
 const ragaToNodes        = {
@@ -4372,7 +4734,17 @@ const ragaToNodes        = {
     "alathur_brothers",
     "maharajapuram_santanam",
     "balamuralikrishna",
-    "nityashree_mahadevan"
+    "nityashree_mahadevan",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "hamsadhwani": [
+    "ml_vasanthakumari",
+    "hyderabad_brothers",
+    "sudha_ragunathan"
   ],
   "surutti": [
     "dk_pattammal",
@@ -4380,10 +4752,193 @@ const ragaToNodes        = {
     "tm_krishna",
     "md_ramanathan",
     "kv_narayanaswamy",
-    "s_sowmya"
+    "s_sowmya",
+    "ramnad_krishnan",
+    "vellore_ramabhadran",
+    "semmangudi_srinivasa_iyer",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman"
   ],
   "natabhairavi": [
     "abhishek_raghuram"
+  ],
+  "saveri": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "kambhoji": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "kapi": [
+    "t_brinda",
+    "t_muktha",
+    "vina_dhanammal"
+  ],
+  "sahana": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "todi": [
+    "t_brinda",
+    "t_muktha",
+    "vina_dhanammal",
+    "dk_pattammal",
+    "ms_subbulakshmi",
+    "ramnad_raghavan"
+  ],
+  "khamas": [
+    "t_brinda",
+    "t_muktha",
+    "vina_dhanammal",
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "begada": [
+    "t_brinda",
+    "t_muktha",
+    "vina_dhanammal",
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "punnagavarali": [
+    "t_brinda",
+    "t_muktha"
+  ],
+  "kalyani": [
+    "vina_dhanammal"
+  ],
+  "lalitha": [
+    "vina_dhanammal"
+  ],
+  "malavi": [
+    "vina_dhanammal"
+  ],
+  "kharaharapriya": [
+    "vina_dhanammal",
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "umaabharanam": [
+    "vina_dhanammal"
+  ],
+  "bahudari": [
+    "vina_dhanammal"
+  ],
+  "kaanada": [
+    "vina_dhanammal"
+  ],
+  "bhairavi": [
+    "vina_dhanammal",
+    "dk_pattammal"
+  ],
+  "shankarabharanam": [
+    "vina_dhanammal",
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "ananda_bhairavi": [
+    "vina_dhanammal"
+  ],
+  "mohanam": [
+    "vina_dhanammal"
+  ],
+  "reetigowla": [
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "poornashadjam": [
+    "ramnad_krishnan",
+    "tn_krishnan",
+    "vellore_ramabhadran"
+  ],
+  "devagandhari": [
+    "semmangudi_srinivasa_iyer",
+    "kv_narayanaswamy",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "devamritavarshini": [
+    "musiri_subramania_iyer",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "sriraga": [
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "varali": [
+    "alathur_brothers",
+    "semmangudi_srinivasa_iyer",
+    "tn_krishnan",
+    "lalgudi_jayaraman",
+    "umayalpuram_sivaraman",
+    "vellore_ramabhadran"
+  ],
+  "ahiri": [
+    "dk_pattammal"
+  ],
+  "nadanamakriya": [
+    "dk_pattammal"
+  ],
+  "mayamalavagowla": [
+    "ms_subbulakshmi",
+    "radha_viswanathan",
+    "ramnad_raghavan"
+  ],
+  "gowlipantu": [
+    "ms_subbulakshmi",
+    "radha_viswanathan",
+    "ramnad_raghavan"
+  ],
+  "manirangu": [
+    "dk_pattammal",
+    "ms_subbulakshmi",
+    "ramnad_raghavan"
+  ],
+  "jayamanohari": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "harikambhoji": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "hamsanadam": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "keeravani": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "behag": [
+    "ramnad_krishnan",
+    "t_viswanathan"
+  ],
+  "sowrashtram": [
+    "ramnad_krishnan",
+    "t_viswanathan"
   ]
 };
 

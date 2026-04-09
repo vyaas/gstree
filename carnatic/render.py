@@ -188,19 +188,31 @@ def build_recording_lookups(recordings_data: dict, comp_data: dict) -> tuple[dic
         dict(raga_to_performances),
     )
 
-def build_composition_lookups(graph: dict, comp_data: dict) -> tuple[dict, dict]:
+def build_composition_lookups(
+    graph: dict,
+    comp_data: dict,
+    recordings_data: dict,
+) -> tuple[dict, dict]:
     """
-    Build two lookup dicts from the musicians graph:
+    Build two lookup dicts that map compositions/ragas → musician node IDs.
+
       composition_to_nodes: {composition_id: [node_id, ...]}
       raga_to_nodes:        {raga_id:        [node_id, ...]}
-    A node appears in raga_to_nodes if any youtube entry has raga_id set directly,
-    or has a composition_id whose composition references that raga_id.
+
+    Two sources are indexed:
+      1. Legacy schema  – youtube[] entries embedded in musicians.json nodes
+      2. Structured schema – performers[] inside recordings/*.json sessions
+
+    Both sources are merged; duplicates are suppressed by the existing
+    `if node_id not in …` guards.
     """
     comp_raga: dict[str, str] = {
         c["id"]: c["raga_id"] for c in comp_data.get("compositions", [])
     }
     composition_to_nodes: dict[str, list[str]] = defaultdict(list)
     raga_to_nodes: dict[str, list[str]] = defaultdict(list)
+
+    # ── 1. Legacy schema: youtube[] entries on musician nodes ─────────────────
     for node in graph["nodes"]:
         node_id = node["id"]
         for yt in node.get("youtube", []):
@@ -215,6 +227,25 @@ def build_composition_lookups(graph: dict, comp_data: dict) -> tuple[dict, dict]
             if rid:
                 if node_id not in raga_to_nodes[rid]:
                     raga_to_nodes[rid].append(node_id)
+
+    # ── 2. Structured schema: recordings/*.json performers[] ─────────────────
+    for rec in recordings_data.get("recordings", []):
+        for session in rec.get("sessions", []):
+            performers = session.get("performers", [])
+            for perf in session.get("performances", []):
+                comp_id = perf.get("composition_id")
+                raga_id = perf.get("raga_id")
+                # Infer raga from composition if not set directly
+                if not raga_id and comp_id:
+                    raga_id = comp_raga.get(comp_id)
+                for pf in performers:
+                    mid = pf.get("musician_id")
+                    if mid:
+                        if comp_id and mid not in composition_to_nodes[comp_id]:
+                            composition_to_nodes[comp_id].append(mid)
+                        if raga_id and mid not in raga_to_nodes[raga_id]:
+                            raga_to_nodes[raga_id].append(mid)
+
     return dict(composition_to_nodes), dict(raga_to_nodes)
 
 # ── build cytoscape elements ───────────────────────────────────────────────────
@@ -1525,7 +1556,7 @@ def main() -> None:
     graph            = json.loads(DATA_FILE.read_text(encoding="utf-8"))
     comp_data        = load_compositions()
     recordings_data  = load_recordings()
-    composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data)
+    composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data, recordings_data)
     musician_to_performances, composition_to_performances, raga_to_performances = \
         build_recording_lookups(recordings_data, comp_data)
     elements = build_elements(graph)
