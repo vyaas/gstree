@@ -1311,7 +1311,13 @@ function createPlayer(vid, label, artistName, startSeconds) {{
 
 function openOrFocusPlayer(vid, label, artistName, startSeconds) {{
   if (playerRegistry.has(vid)) {{
-    bringToFront(playerRegistry.get(vid));
+    const existing = playerRegistry.get(vid);
+    // Always update: new track in same concert → replace iframe src + title
+    existing.iframe.src = ytEmbedUrl(vid, startSeconds);
+    existing.titleEl.textContent =
+      (artistName ? artistName + ' \u2014 ' : '') + label;
+    bringToFront(existing);
+    refreshPlayingIndicators();
     return;
   }}
   const p = createPlayer(vid, label, artistName, startSeconds);
