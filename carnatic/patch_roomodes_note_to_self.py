@@ -2,17 +2,24 @@
 """
 patch_roomodes_note_to_self.py
 
-Adds a "note to self" capability to every agent in .roomodes.
+Two modes of operation:
 
-Each agent gains:
-  1. Edit permission for `.roomodes` (scoped to their own slug section
-     by instruction, not by regex — the file is one JSON blob).
-  2. A `## Note to self` section in `customInstructions` that explains
-     the constraint: edit ONLY your own section, use apply_diff surgically,
-     never touch another agent's slug.
+1. Bootstrap mode (default):
+   Adds a "note to self" capability to every agent in .roomodes.
+   Each agent gains edit permission for `.roomodes` and a
+   `## Note to self — learning log` section in customInstructions.
 
-Usage:
-    python3 carnatic/patch_roomodes_note_to_self.py [--dry-run]
+   Usage:
+       python3 carnatic/patch_roomodes_note_to_self.py [--dry-run]
+
+2. Append mode (--slug + --entry):
+   Appends a single dated log entry to one agent's learning log.
+
+   Usage:
+       python3 carnatic/patch_roomodes_note_to_self.py \\
+           --slug carnatic-coder \\
+           --entry "2026-04-11: <one sentence>" \\
+           [--dry-run]
 
 With --dry-run: prints the transformed JSON to stdout, does not write.
 Without --dry-run: writes back to .roomodes in place.
@@ -99,6 +106,35 @@ def add_note_to_self_instructions(custom_instructions: str, slug: str) -> str:
     return custom_instructions + NOTE_TO_SELF_TEMPLATE.format(slug=slug)
 
 
+def append_log_entry(data: dict, slug: str, entry: str) -> tuple[dict, list[str]]:
+    """
+    Append a single dated log entry to one agent's learning log section.
+    Returns (modified_dict, changelog).
+    """
+    data = copy.deepcopy(data)
+    changelog = []
+    marker = "## Note to self — learning log"
+    found = False
+
+    for mode in data.get("customModes", []):
+        if mode.get("slug") != slug:
+            continue
+        found = True
+        instructions = mode.get("customInstructions", "")
+        if marker not in instructions:
+            changelog.append(f"  [{slug}] ERROR: learning log marker not found — run bootstrap first")
+            break
+        line = f"- {entry}"
+        mode["customInstructions"] = instructions.rstrip() + "\n" + line + "\n"
+        changelog.append(f"  [{slug}] appended entry: {line}")
+        break
+
+    if not found:
+        changelog.append(f"  ERROR: slug '{slug}' not found in .roomodes")
+
+    return data, changelog
+
+
 def transform(data: dict) -> tuple[dict, list[str]]:
     """
     Pure transformation: takes parsed .roomodes dict, returns (modified_dict, changelog).
@@ -130,18 +166,43 @@ def transform(data: dict) -> tuple[dict, list[str]]:
     return data, changelog
 
 
-def main():
-    dry_run = "--dry-run" in sys.argv
+def parse_args():
+    """Minimal arg parser — avoids argparse dependency."""
+    args = sys.argv[1:]
+    dry_run = "--dry-run" in args
+    slug    = None
+    entry   = None
+    i = 0
+    while i < len(args):
+        if args[i] == "--slug" and i + 1 < len(args):
+            slug = args[i + 1]; i += 2
+        elif args[i] == "--entry" and i + 1 < len(args):
+            entry = args[i + 1]; i += 2
+        else:
+            i += 1
+    return dry_run, slug, entry
 
-    raw = ROOMODES_PATH.read_text(encoding="utf-8")
+
+def main():
+    dry_run, slug, entry = parse_args()
+
+    raw  = ROOMODES_PATH.read_text(encoding="utf-8")
     data = json.loads(raw)
 
-    transformed, changelog = transform(data)
+    if slug and entry:
+        # Append mode
+        transformed, changelog = append_log_entry(data, slug, entry)
+        label = "APPEND"
+    else:
+        # Bootstrap mode
+        transformed, changelog = transform(data)
+        label = "BOOTSTRAP"
 
     output = json.dumps(transformed, indent=2, ensure_ascii=False)
 
     print("## patch_roomodes_note_to_self.py")
     print(f"   source: {ROOMODES_PATH}")
+    print(f"   label:  {label}")
     print(f"   mode:   {'DRY RUN — no file written' if dry_run else 'LIVE — writing to disk'}")
     print()
     print("Changes:")
