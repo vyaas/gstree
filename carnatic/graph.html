@@ -77,24 +77,21 @@
   }
   .node-wiki-link:hover { text-decoration: underline; }
 
-  /* era dot and instrument icon — same vocabulary as Bani Flow trail */
-  .node-era-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    display: inline-block; flex-shrink: 0;
+  /* Single coloured shape — shape = instrument, colour = era */
+  .node-shape-icon {
+    width: 10px; height: 10px; display: inline-block;
+    flex-shrink: 0;
+    /* background-color set dynamically via JS: d.color */
   }
-  .node-instr-icon {
-    width: 8px; height: 8px; display: inline-block;
-    background: var(--gray); flex-shrink: 0;
+  .node-shape-icon.ellipse   { border-radius: 50%; }
+  .node-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
+  .node-shape-icon.rectangle { border-radius: 1px; }
+  .node-shape-icon.triangle  {
+    width: 0; height: 0; background: none !important;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-bottom: 10px solid var(--gray); /* overridden by JS for triangle */
   }
-  .node-instr-icon.ellipse   { border-radius: 50%; }
-  .node-instr-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
-  .node-instr-icon.rectangle { border-radius: 1px; }
-  .node-instr-icon.triangle  {
-    width: 0; height: 0; background: none;
-    border-left: 4px solid transparent; border-right: 4px solid transparent;
-    border-bottom: 8px solid var(--gray);
-  }
-  .node-instr-icon.hexagon {
+  .node-shape-icon.hexagon {
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   }
 
@@ -288,13 +285,9 @@
   .trail-artist:hover { text-decoration: underline; }
   .trail-row2 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
   .trail-label { color: var(--fg3); font-size: 0.72rem; flex: 1; min-width: 0; }
-  .trail-color-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    display: inline-block; margin-right: 4px; vertical-align: middle; flex-shrink: 0;
-  }
   .trail-shape-icon {
     width: 8px; height: 8px; display: inline-block;
-    background: var(--gray); margin-right: 6px; vertical-align: middle; flex-shrink: 0;
+    margin-right: 6px; vertical-align: middle; flex-shrink: 0;
   }
   .trail-shape-icon.ellipse   { border-radius: 50%; }
   .trail-shape-icon.diamond   { transform: rotate(45deg); border-radius: 1px; }
@@ -412,8 +405,7 @@
   <div id="right-sidebar">
     <div id="node-info">
       <div id="node-header">
-        <span id="node-era-dot" class="node-era-dot"></span>
-        <span id="node-instr-icon" class="node-instr-icon ellipse"></span>
+        <span id="node-shape-icon" class="node-shape-icon ellipse"></span>
         <span id="node-name">—</span>
         <span id="node-lifespan"></span>
         <a id="node-wiki-link" class="node-wiki-link" href="#" target="_blank"
@@ -15484,11 +15476,15 @@ function selectNode(node) {
   document.getElementById('node-name').textContent     = d.label;
   document.getElementById('node-lifespan').textContent = d.lifespan || '';
 
-  const eraDot = document.getElementById('node-era-dot');
-  eraDot.style.background = d.color || 'var(--gray)';
-
-  const instrIcon = document.getElementById('node-instr-icon');
-  instrIcon.className = 'node-instr-icon ' + (d.shape || 'ellipse');
+  const shapeIcon = document.getElementById('node-shape-icon');
+  shapeIcon.className = 'node-shape-icon ' + (d.shape || 'ellipse');
+  if (d.shape === 'triangle') {
+    shapeIcon.style.borderBottomColor = d.color || 'var(--gray)';
+    shapeIcon.style.background = '';
+  } else {
+    shapeIcon.style.background = d.color || 'var(--gray)';
+    shapeIcon.style.borderBottomColor = '';
+  }
 
   const wikiLink   = document.getElementById('node-wiki-link');
   const primarySrc = d.sources && d.sources.length > 0 ? d.sources[0] : null;
@@ -15919,16 +15915,14 @@ function buildListeningTrail(type, id, matchedNodeIds) {
     const artistSpan = document.createElement('span');
     artistSpan.className = 'trail-artist';
 
-    if (row.color) {
-      const colorDot = document.createElement('span');
-      colorDot.className = 'trail-color-dot';
-      colorDot.style.background = row.color;
-      artistSpan.appendChild(colorDot);
-    }
-
-    if (row.shape) {
+    if (row.color || row.shape) {
       const shapeIcon = document.createElement('span');
-      shapeIcon.className = `trail-shape-icon ${row.shape}`;
+      shapeIcon.className = `trail-shape-icon ${row.shape || 'ellipse'}`;
+      if ((row.shape || 'ellipse') === 'triangle') {
+        shapeIcon.style.borderBottomColor = row.color || 'var(--gray)';
+      } else {
+        shapeIcon.style.background = row.color || 'var(--gray)';
+      }
       artistSpan.appendChild(shapeIcon);
     }
 
