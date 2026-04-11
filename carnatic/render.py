@@ -421,12 +421,22 @@ def render_html(
   #main {{ display: flex; flex: 1; overflow: hidden; position: relative; }}
   #cy   {{ flex: 1; background: var(--bg); }}
 
-  /* ── sidebar ── */
-  #sidebar {{
+  /* ── left sidebar (global controls: Bani Flow, legends) ── */
+  #left-sidebar {{
+    width: 280px; background: var(--bg1);
+    border-right: 1px solid var(--bg2);
+    display: flex; flex-direction: column;
+    overflow-y: auto; font-size: 0.78rem;
+    flex-shrink: 0;
+  }}
+
+  /* ── right sidebar (node-specific: selection, recordings, edge) ── */
+  #right-sidebar {{
     width: 240px; background: var(--bg1);
     border-left: 1px solid var(--bg2);
     display: flex; flex-direction: column;
     overflow-y: auto; font-size: 0.78rem;
+    flex-shrink: 0;
   }}
   .panel {{ padding: 12px 14px; border-bottom: 1px solid var(--bg2); flex-shrink: 0; }}
   .panel h3 {{
@@ -509,10 +519,6 @@ def render_html(
   }}
   .shape-icon.hexagon {{ clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); }}
 
-  #hint {{
-    padding: 8px 14px; color: var(--bg3); font-size: 0.68rem;
-    line-height: 1.6; margin-top: auto; border-top: 1px solid var(--bg2);
-  }}
 
   /* ── hover popover ── */
   #hover-popover {{
@@ -697,6 +703,28 @@ def render_html(
 </header>
 
 <div id="main">
+  <!-- ── left sidebar: global controls (Bani Flow, legends) ── -->
+  <div id="left-sidebar">
+    <!-- ── Bani Flow panel ── -->
+    <div class="panel" id="bani-flow-panel">
+      <h3>Bani Flow &#9835;</h3>
+      <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
+      <div id="listening-trail">
+        <div id="trail-composer-label"></div>
+        <ul id="trail-list"></ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Era</h3>
+      {legend_items}
+    </div>
+    <div class="panel">
+      <h3>Instrument</h3>
+      {instrument_items}
+    </div>
+  </div>
+
   <div id="cy"></div>
   <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
 
@@ -706,7 +734,8 @@ def render_html(
     <div id="hp-sub"></div>
   </div>
 
-  <div id="sidebar">
+  <!-- ── right sidebar: node-specific (selection, recordings, edge) ── -->
+  <div id="right-sidebar">
     <div class="panel" id="node-info">
       <h3>Selected</h3>
       <div id="node-name">—</div>
@@ -733,35 +762,6 @@ def render_html(
       <div id="edge-note"></div>
       <div id="edge-conf"></div>
       <a id="edge-src" href="#" target="_blank">source &#8599;</a>
-    </div>
-
-    <!-- ── Bani Flow panel ── -->
-    <div class="panel" id="bani-flow-panel">
-      <h3>Bani Flow &#9835;</h3>
-      <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
-      <div id="listening-trail">
-        <div id="trail-composer-label"></div>
-        <ul id="trail-list"></ul>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>Era</h3>
-      {legend_items}
-    </div>
-    <div class="panel">
-      <h3>Instrument</h3>
-      {instrument_items}
-    </div>
-    <div id="hint">
-      Click node to inspect.<br>
-      &#9654; track &#8594; plays inline, graph stays live.<br>
-      Drag player anywhere on canvas.<br>
-      Click edge to see relationship.<br>
-      Double-click node &#8599; opens primary source.<br>
-      Green border = has recordings.<br>
-      Teal border = matches Bani Flow filter.<br>
-      Scroll to zoom &middot; drag to pan.
     </div>
   </div>
 </div>
