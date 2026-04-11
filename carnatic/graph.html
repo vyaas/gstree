@@ -23308,7 +23308,8 @@ function buildRecordingsList(nodeId, nodeData) {
     });
   });
 
-  // Sort: year asc (nulls last), performances before non-performances, then title
+  // Sort: year asc (nulls last), performances before non-performances,
+  // then same-concert tracks by offset_seconds (concert order), then title
   allRecs.sort((a, b) => {
     if (a.year !== b.year) {
       if (a.year == null) return 1;
@@ -23318,6 +23319,8 @@ function buildRecordingsList(nodeId, nodeData) {
     const aIsPerf = !!(a.composition_id && a.raga_id);
     const bIsPerf = !!(b.composition_id && b.raga_id);
     if (aIsPerf !== bIsPerf) return aIsPerf ? -1 : 1;
+    // Same concert (same video_id) → preserve concert order by timestamp
+    if (a.vid && a.vid === b.vid) return (a.offset_seconds || 0) - (b.offset_seconds || 0);
     return (a.title || '').localeCompare(b.title || '');
   });
 
