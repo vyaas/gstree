@@ -628,16 +628,42 @@ def render_html(
   #trail-list li {{
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
     font-size: 0.74rem; color: var(--fg2);
-    display: flex; align-items: flex-start; gap: 5px; line-height: 1.4; flex-wrap: wrap;
+    display: flex; flex-direction: column; gap: 2px; line-height: 1.4;
     cursor: pointer;
   }}
   #trail-list li:last-child {{ border-bottom: none; }}
   #trail-list li:hover {{ color: var(--yellow); }}
   #trail-list li.playing {{ color: var(--aqua); }}
-  .trail-year {{ flex-shrink: 0; color: var(--gray); font-size: 0.68rem; min-width: 30px; margin-top: 2px; }}
-  .trail-artist {{ color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; }}
+  .trail-header {{ display: flex; align-items: center; width: 100%; gap: 4px; }}
+  .trail-lifespan {{ flex-shrink: 0; color: var(--gray); font-size: 0.68rem; margin-left: auto; padding-left: 6px; }}
+  .trail-artist {{ color: var(--yellow); cursor: pointer; font-weight: bold; flex-shrink: 0; display: inline-flex; align-items: center; gap: 0; }}
   .trail-artist:hover {{ text-decoration: underline; }}
-  .trail-label {{ color: var(--fg3); font-size: 0.72rem; width: 100%; padding-left: 35px; }}
+  .trail-row2 {{ display: flex; align-items: baseline; width: 100%; gap: 4px; }}
+  .trail-label {{ color: var(--fg3); font-size: 0.72rem; flex: 1; min-width: 0; }}
+  .trail-color-dot {{
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 4px; vertical-align: middle; flex-shrink: 0;
+  }}
+  .trail-shape-icon {{
+    width: 8px; height: 8px; display: inline-block;
+    background: var(--gray); margin-right: 6px; vertical-align: middle; flex-shrink: 0;
+  }}
+  .trail-shape-icon.ellipse   {{ border-radius: 50%; }}
+  .trail-shape-icon.diamond   {{ transform: rotate(45deg); border-radius: 1px; }}
+  .trail-shape-icon.rectangle {{ border-radius: 1px; }}
+  .trail-shape-icon.triangle  {{
+    width: 0; height: 0; background: none;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 8px solid var(--gray);
+  }}
+  .trail-shape-icon.hexagon {{
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }}
+  .trail-link {{
+    flex-shrink: 0; color: var(--blue); font-size: 0.70rem;
+    text-decoration: none; white-space: nowrap; margin-left: auto;
+  }}
+  .trail-link:hover {{ text-decoration: underline; }}
 
   /* ── dual search boxes ── */
   .search-group {{
@@ -934,6 +960,16 @@ function ytEmbedUrl(vid, startSeconds) {{
 function ytDirectUrl(vid, startSeconds) {{
   const t = (startSeconds && startSeconds > 0) ? `?t=${{startSeconds}}` : '';
   return `https://youtu.be/${{vid}}${{t}}`;
+}}
+
+function formatTimestamp(seconds) {{
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) {{
+    return `${{h}}:${{m.toString().padStart(2, '0')}}:${{s.toString().padStart(2, '0')}}`;
+  }}
+  return `${{m}}:${{s.toString().padStart(2, '0')}}`;
 }}
 
 function nextSpawnPosition() {{
@@ -1433,7 +1469,7 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
             return c && c.raga_id === id;
           }})())) ;
       if (matches) {{
-        rows.push({{ nodeId: nid, artistLabel: d.label, born: d.born, track: t, isStructured: false }});
+        rows.push({{ nodeId: nid, artistLabel: d.label, born: d.born, lifespan: d.lifespan, color: d.color, shape: d.shape, track: t, isStructured: false }});
       }}
     }});
   }});
@@ -1445,13 +1481,14 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
 
   structuredPerfs.forEach(p => {{
     const primaryPerformer = p.performers.find(pf => pf.role === 'vocal') || p.performers[0];
-    let artistLabel, nodeId, born;
+    let artistLabel, nodeId, born, pNode;
     if (primaryPerformer && primaryPerformer.musician_id) {{
-      const pNode = cy.getElementById(primaryPerformer.musician_id);
+      pNode = cy.getElementById(primaryPerformer.musician_id);
       artistLabel = (pNode && pNode.data('label')) || primaryPerformer.unmatched_name || p.title;
       nodeId = primaryPerformer.musician_id;
       born   = pNode ? pNode.data('born') : null;
     }} else {{
+      pNode = null;
       artistLabel = (primaryPerformer && primaryPerformer.unmatched_name) || p.title;
       nodeId = null;
       born   = null;
@@ -1460,6 +1497,9 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
       nodeId,
       artistLabel,
       born,
+      lifespan: pNode ? pNode.data('lifespan') : null,
+      color:    pNode ? pNode.data('color')    : null,
+      shape:    pNode ? pNode.data('shape')    : null,
       track: {{
         vid:            p.video_id,
         label:          p.display_title,
@@ -1498,13 +1538,28 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
       openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
                         row.isStructured ? row.track.offset_seconds : undefined));
 
-    const yearSpan = document.createElement('span');
-    yearSpan.className = 'trail-year';
-    yearSpan.textContent = row.track.year || '';
-
     const artistSpan = document.createElement('span');
     artistSpan.className = 'trail-artist';
-    artistSpan.textContent = row.artistLabel;
+
+    if (row.color) {{
+      const colorDot = document.createElement('span');
+      colorDot.className = 'trail-color-dot';
+      colorDot.style.background = row.color;
+      artistSpan.appendChild(colorDot);
+    }}
+
+    if (row.shape) {{
+      const shapeIcon = document.createElement('span');
+      shapeIcon.className = `trail-shape-icon ${{row.shape}}`;
+      artistSpan.appendChild(shapeIcon);
+    }}
+
+    artistSpan.appendChild(document.createTextNode(row.artistLabel));
+
+    const lifespanSpan = document.createElement('span');
+    lifespanSpan.className = 'trail-lifespan';
+    lifespanSpan.textContent = row.lifespan || '';
+
     if (row.nodeId) {{
       artistSpan.addEventListener('click', e => {{
         e.stopPropagation();
@@ -1515,13 +1570,41 @@ function buildListeningTrail(type, id, matchedNodeIds) {{
       }});
     }}
 
+    // For legacy tracks, resolve composition title from compositions array.
+    // For structured tracks, track.label is already the clean display_title.
+    let compTitle = row.track.label;
+    if (!row.isStructured && row.track.composition_id) {{
+      const comp = compositions.find(c => c.id === row.track.composition_id);
+      if (comp) compTitle = comp.title;
+    }}
+
     const labelSpan = document.createElement('span');
     labelSpan.className = 'trail-label';
-    labelSpan.textContent = row.track.label;
+    labelSpan.textContent = compTitle;
 
-    li.appendChild(yearSpan);
-    li.appendChild(artistSpan);
-    li.appendChild(labelSpan);
+    const offsetSecs = row.isStructured ? row.track.offset_seconds : 0;
+    const linkA = document.createElement('a');
+    linkA.className = 'trail-link';
+    linkA.href = ytDirectUrl(row.track.vid, offsetSecs || undefined);
+    linkA.target = '_blank';
+    linkA.textContent = (offsetSecs > 0)
+      ? `${{formatTimestamp(offsetSecs)}} \u2197`
+      : `00:00 \u2197`;
+    linkA.title = offsetSecs > 0 ? 'Open in YouTube at this timestamp' : 'Open in YouTube';
+    linkA.addEventListener('click', e => e.stopPropagation());
+
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'trail-header';
+    headerDiv.appendChild(artistSpan);
+    headerDiv.appendChild(lifespanSpan);
+
+    const row2Div = document.createElement('div');
+    row2Div.className = 'trail-row2';
+    row2Div.appendChild(labelSpan);
+    row2Div.appendChild(linkA);
+
+    li.appendChild(headerDiv);
+    li.appendChild(row2Div);
     trailList.appendChild(li);
   }});
 
