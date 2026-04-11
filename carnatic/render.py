@@ -411,6 +411,69 @@ def render_html(
   }}
   .stats  {{ font-size: 0.75rem; color: var(--gray); }}
   .controls {{ display: flex; gap: 8px; margin-left: auto; }}
+
+  /* ── canvas column (filter bar + graph) ── */
+  #canvas-wrap {{
+    flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;
+  }}
+  #filter-bar {{
+    display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+    padding: 5px 10px;
+    background: var(--bg1); border-bottom: 1px solid var(--bg2);
+    flex-shrink: 0;
+  }}
+
+  /* ── filter groups ── */
+  .filter-group {{
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+  }}
+  .filter-separator {{
+    width: 1px; height: 14px; background: var(--bg3);
+    flex-shrink: 0; margin: 0 2px;
+  }}
+
+  /* ── individual chips ── */
+  .filter-chip {{
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 7px; border-radius: 2px;
+    border: 1px solid var(--bg3); background: var(--bg1);
+    color: var(--fg3); font-size: 0.68rem;
+    cursor: pointer; user-select: none;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+    white-space: nowrap;
+  }}
+  .filter-chip:hover {{ border-color: var(--fg3); color: var(--fg); }}
+  .filter-chip.active {{
+    border-color: var(--yellow); color: var(--yellow); background: var(--bg2);
+  }}
+  .filter-chip .chip-dot {{
+    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  }}
+  .filter-chip .chip-dot.diamond   {{ transform: rotate(45deg); border-radius: 1px; }}
+  .filter-chip .chip-dot.rectangle {{ border-radius: 1px; }}
+  .filter-chip .chip-dot.triangle  {{
+    width: 0; height: 0; background: none !important;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 7px solid var(--gray);
+  }}
+  .filter-chip.active .chip-dot.triangle {{ border-bottom-color: var(--yellow); }}
+  .filter-chip .chip-dot.hexagon {{
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }}
+
+  /* ── clear-all button ── */
+  .filter-clear {{
+    font-size: 0.65rem; color: var(--gray);
+    background: none; border: none; cursor: pointer;
+    padding: 2px 4px; margin-left: 4px;
+  }}
+  .filter-clear:hover {{ color: var(--fg); }}
+
+  /* ── scope label ── */
+  .search-scope-label {{
+    font-size: 0.65rem; color: var(--gray);
+    font-style: italic; padding: 2px 0 4px 2px; line-height: 1.3;
+  }}
   button {{
     background: var(--bg2); color: var(--fg2); border: 1px solid var(--bg3);
     padding: 4px 10px; font-family: inherit; font-size: 0.75rem;
@@ -420,7 +483,7 @@ def render_html(
 
   /* ── main layout ── */
   #main {{ display: flex; flex: 1; overflow: hidden; position: relative; }}
-  #cy   {{ flex: 1; background: var(--bg); }}
+  #cy   {{ flex: 1; background: var(--bg); min-height: 0; }}
 
   /* ── left sidebar (global controls: Bani Flow, legends) ── */
   #left-sidebar {{
@@ -528,20 +591,6 @@ def render_html(
     font-size: 0.75rem; text-decoration: none;
   }}
   #edge-src:hover {{ text-decoration: underline; }}
-
-  /* legends */
-  .legend-item  {{ display: flex; align-items: center; gap: 7px; margin-bottom: 5px; color: var(--fg2); }}
-  .dot          {{ width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex-shrink: 0; }}
-  .shape-icon   {{ width: 11px; height: 11px; display: inline-block; flex-shrink: 0; background: var(--gray); }}
-  .shape-icon.ellipse   {{ border-radius: 50%; }}
-  .shape-icon.diamond   {{ transform: rotate(45deg); border-radius: 1px; }}
-  .shape-icon.rectangle {{ border-radius: 1px; }}
-  .shape-icon.triangle  {{
-    width: 0; height: 0; background: none;
-    border-left: 6px solid transparent; border-right: 6px solid transparent;
-    border-bottom: 11px solid var(--gray);
-  }}
-  .shape-icon.hexagon {{ clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); }}
 
 
   /* ── hover popover ── */
@@ -757,6 +806,9 @@ def render_html(
                placeholder="&#9833; Search raga / composition"
                autocomplete="off" spellcheck="false">
         <div id="bani-search-dropdown" class="search-dropdown" style="display:none"></div>
+        <div class="search-scope-label" id="bani-scope-label" style="display:none">
+          searching all compositions
+        </div>
       </div>
       <button id="bani-clear" onclick="clearBaniFilter()">&#10005; Clear filter</button>
       <div id="listening-trail">
@@ -765,18 +817,20 @@ def render_html(
       </div>
     </div>
 
-    <div class="panel">
-      <h3>Era</h3>
-      {legend_items}
-    </div>
-    <div class="panel">
-      <h3>Instrument</h3>
-      {instrument_items}
-    </div>
   </div>
 
-  <div id="cy"></div>
-  <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
+  <!-- ── canvas column: filter bar + graph ── -->
+  <div id="canvas-wrap">
+    <div id="filter-bar">
+      <div class="filter-group" id="era-filter-group" data-group="era"></div>
+      <div class="filter-separator"></div>
+      <div class="filter-group" id="instr-filter-group" data-group="instrument"></div>
+      <button class="filter-clear" id="filter-clear-all"
+              style="display:none" title="Clear all filters" onclick="clearAllChipFilters()">&#10005; Show all</button>
+    </div>
+    <div id="cy"></div>
+    <svg id="timeline-ruler" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:50;"></svg>
+  </div>
 
   <!-- ── hover popover ── -->
   <div id="hover-popover">
@@ -791,6 +845,9 @@ def render_html(
              placeholder="&#128269; Search musician&#8230;"
              autocomplete="off" spellcheck="false">
       <div id="musician-search-dropdown" class="search-dropdown" style="display:none"></div>
+      <div class="search-scope-label" id="musician-scope-label" style="display:none">
+        searching all {node_count} musicians
+      </div>
     </div>
     <div id="node-info">
       <div id="node-header">
@@ -909,7 +966,8 @@ const cy = cytoscape({{
         'opacity':            1.0,
       }}
     }},
-    {{ selector: '.faded', style: {{ 'opacity': 0.12 }} }},
+    {{ selector: '.faded',      style: {{ 'opacity': 0.12 }} }},
+    {{ selector: '.chip-faded', style: {{ 'opacity': 0.12 }} }},
   ],
   layout: {{
     name: 'cose', animate: true, animationDuration: 800,
@@ -926,7 +984,165 @@ cy.ready(() => {{
     if (n.data('tracks').length > 0) n.addClass('has-tracks');
   }});
   applyZoomLabels();
+  buildFilterChips();
 }});
+
+// ── ERA_COLOURS and INSTRUMENT_SHAPES mirrors (for chip injection) ─────────────
+const ERA_COLOURS = {{
+  trinity:        '#d79921',
+  bridge:         '#d65d0e',
+  golden_age:     '#458588',
+  disseminator:   '#689d6a',
+  living_pillars: '#b16286',
+  contemporary:   '#98971a',
+}};
+const INSTRUMENT_SHAPES = {{
+  vocal:         'ellipse',
+  veena:         'diamond',
+  violin:        'rectangle',
+  flute:         'triangle',
+  mridangam:     'hexagon',
+  bharatanatyam: 'ellipse',
+}};
+
+// ── chip filter state ─────────────────────────────────────────────────────────
+const activeFilters = {{ era: new Set(), instrument: new Set() }};
+
+function buildFilterChips() {{
+  const eraGroup   = document.getElementById('era-filter-group');
+  const instrGroup = document.getElementById('instr-filter-group');
+
+  const eraOrder = [
+    'trinity', 'bridge', 'golden_age', 'disseminator', 'living_pillars', 'contemporary'
+  ];
+  const eraLabels = {{
+    trinity:        'Trinity',
+    bridge:         'Bridge',
+    golden_age:     'Golden Age',
+    disseminator:   'Disseminators',
+    living_pillars: 'Living Pillars',
+    contemporary:   'Contemporary',
+  }};
+  eraOrder.forEach(era => {{
+    const chip = document.createElement('span');
+    chip.className   = 'filter-chip';
+    chip.dataset.key = era;
+    chip.dataset.group = 'era';
+
+    const dot = document.createElement('span');
+    dot.className = 'chip-dot ellipse';
+    dot.style.background = ERA_COLOURS[era] || 'var(--gray)';
+
+    const label = document.createElement('span');
+    label.textContent = eraLabels[era] || era;
+
+    chip.appendChild(dot);
+    chip.appendChild(label);
+    chip.addEventListener('click', () => toggleFilterChip(chip));
+    eraGroup.appendChild(chip);
+  }});
+
+  const instrOrder = ['vocal', 'veena', 'violin', 'flute', 'mridangam'];
+  const instrLabels = {{
+    vocal:     'vocal',
+    veena:     'veena',
+    violin:    'violin',
+    flute:     'flute',
+    mridangam: 'mridangam',
+  }};
+  instrOrder.forEach(instr => {{
+    const chip = document.createElement('span');
+    chip.className   = 'filter-chip';
+    chip.dataset.key = instr;
+    chip.dataset.group = 'instrument';
+
+    const dot = document.createElement('span');
+    const shapeClass = INSTRUMENT_SHAPES[instr] || 'ellipse';
+    dot.className = `chip-dot ${{shapeClass}}`;
+    if (shapeClass !== 'triangle') {{
+      dot.style.background = 'var(--gray)';
+    }}
+
+    const label = document.createElement('span');
+    label.textContent = instrLabels[instr] || instr;
+
+    chip.appendChild(dot);
+    chip.appendChild(label);
+    chip.addEventListener('click', () => toggleFilterChip(chip));
+    instrGroup.appendChild(chip);
+  }});
+}}
+
+function toggleFilterChip(chip) {{
+  const group = chip.dataset.group;
+  const key   = chip.dataset.key;
+  if (activeFilters[group].has(key)) {{
+    activeFilters[group].delete(key);
+    chip.classList.remove('active');
+  }} else {{
+    activeFilters[group].add(key);
+    chip.classList.add('active');
+  }}
+  applyChipFilters();
+}}
+
+function applyChipFilters() {{
+  // Mutual exclusion: clear Bani Flow filter when chip filter activates
+  const eraActive   = activeFilters.era;
+  const instrActive = activeFilters.instrument;
+  const anyActive   = eraActive.size > 0 || instrActive.size > 0;
+
+  if (anyActive && activeBaniFilter) {{
+    clearBaniFilter();
+  }}
+
+  if (!anyActive) {{
+    cy.elements().removeClass('chip-faded');
+    document.getElementById('filter-clear-all').style.display = 'none';
+    setScopeLabels(false);
+    return;
+  }}
+
+  cy.nodes().forEach(node => {{
+    const d = node.data();
+    const eraMatch   = eraActive.size   === 0 || eraActive.has(d.era);
+    const instrMatch = instrActive.size === 0 || instrActive.has(d.instrument);
+    const passes = eraMatch && instrMatch;
+    if (passes) {{
+      node.removeClass('chip-faded');
+    }} else {{
+      node.addClass('chip-faded');
+    }}
+  }});
+
+  cy.edges().forEach(edge => {{
+    const srcFaded = edge.source().hasClass('chip-faded');
+    const tgtFaded = edge.target().hasClass('chip-faded');
+    if (srcFaded && tgtFaded) {{
+      edge.addClass('chip-faded');
+    }} else {{
+      edge.removeClass('chip-faded');
+    }}
+  }});
+
+  document.getElementById('filter-clear-all').style.display = 'inline';
+  setScopeLabels(true);
+}}
+
+function clearAllChipFilters() {{
+  activeFilters.era.clear();
+  activeFilters.instrument.clear();
+  document.querySelectorAll('.filter-chip.active').forEach(c => c.classList.remove('active'));
+  cy.elements().removeClass('chip-faded');
+  document.getElementById('filter-clear-all').style.display = 'none';
+  setScopeLabels(false);
+}}
+
+function setScopeLabels(visible) {{
+  const display = visible ? 'block' : 'none';
+  document.getElementById('musician-scope-label').style.display = display;
+  document.getElementById('bani-scope-label').style.display     = display;
+}}
 
 // ── zoom-tiered labels (word-cloud / cartographic style) ──────────────────────
 // Font sizes are graph-space values — Cytoscape's viewport zoom scales them
@@ -1370,6 +1586,8 @@ cy.on('tap', evt => {{
   document.getElementById('node-info').style.display        = 'block';
   document.getElementById('recordings-panel').style.display = 'none';
   document.getElementById('edge-info').style.display        = 'none';
+  // NEW: clear chip filters on background tap
+  clearAllChipFilters();
   applyZoomLabels();
 }});
 
@@ -1768,6 +1986,8 @@ function clearBaniFilter() {{
   document.getElementById('bani-clear').style.display = 'none';
   document.getElementById('listening-trail').style.display = 'none';
   applyZoomLabels();
+  // Mutual exclusion: clear chip filters when Bani Flow filter clears
+  clearAllChipFilters();
 }}
 
 // ── shared dropdown helper ────────────────────────────────────────────────────
