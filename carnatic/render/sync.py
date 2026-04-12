@@ -1,0 +1,93 @@
+"""
+carnatic/render/sync.py — graph.json sync logic (ADR-016).
+
+sync_graph_json() keeps graph.json current from musicians.json,
+compositions.json, and the recordings/ directory before each render.
+Atomic write via temp file + os.replace.
+"""
+import json
+import os
+import tempfile
+from pathlib import Path
+
+def sync_graph_json(
+    graph_file: Path,
+    musicians_file: Path,
+    compositions_file: Path,
+) -> None:
+    """
+    Sync graph.json["musicians"], graph.json["compositions"], and
+    graph.json["recording_refs"] from the canonical source files before rendering.
+
+    recording_refs is rebuilt from the recordings/ directory on every render,
+    so adding a new recordings/*.json file is automatically picked up without
+    any manual graph.json edit.
+
+    This is the single sync point that keeps graph.json current for traversal
+    and rendering (ADR-016). Idempotent: safe to call on every render.py
+    invocation. Atomic: writes via temp file + os.replace.
+    """
+
+    graph = json.loads(graph_file.read_text(encoding="utf-8"))
+
+    if musicians_file.exists():
+        m = json.loads(musicians_file.read_text(encoding="utf-8"))
+        graph["musicians"] = {
+            "nodes": m.get("nodes", []),
+            "edges": m.get("edges", []),
+        }
+
+    if compositions_file.exists():
+        c = json.loads(compositions_file.read_text(encoding="utf-8"))
+        graph["compositions"] = {
+            "ragas":        c.get("ragas", []),
+            "composers":    c.get("composers", []),
+            "compositions": c.get("compositions", []),
+        }
+
+    # Rebuild recording_refs from recordings/ directory.
+    # Each ref carries the fields CarnaticGraph needs for lazy loading:
+    #   id, path, title, short_title, date, venue, primary_musician_ids
+    recordings_dir = graph_file.parent / "recordings"
+    if recordings_dir.is_dir():
+        existing_refs = {r["id"]: r for r in graph.get("recording_refs", [])}
+        new_refs = []
+        for f in sorted(recordings_dir.glob("*.json")):
+            if f.name.startswith("_"):
+                continue
+            try:
+                rec = json.loads(f.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            rec_id = rec.get("id")
+            if not rec_id:
+                continue
+            # Collect all musician_ids across all sessions
+            primary_ids: list[str] = []
+            for session in rec.get("sessions", []):
+                for pf in session.get("performers", []):
+                    mid = pf.get("musician_id")
+                    if mid and mid not in primary_ids:
+                        primary_ids.append(mid)
+            ref = {
+                "id":                  rec_id,
+                "path":                f"recordings/{f.name}",
+                "title":               rec.get("title", ""),
+                "short_title":         rec.get("short_title", ""),
+                "date":                rec.get("date", ""),
+                "venue":               rec.get("venue", ""),
+                "primary_musician_ids": primary_ids,
+            }
+            new_refs.append(ref)
+        graph["recording_refs"] = new_refs
+
+    text = json.dumps(graph, indent=2, ensure_ascii=False) + "\n"
+    dir_ = graph_file.parent
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", dir=dir_, suffix=".tmp", delete=False
+    ) as f:
+        f.write(text)
+        tmp = Path(f.name)
+    os.replace(tmp, graph_file)
+    print(f"[SYNC] graph.json ← musicians.json + compositions.json + recordings/")
+
