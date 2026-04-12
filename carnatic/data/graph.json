@@ -4215,6 +4215,75 @@
           }
         ],
         "notes": "16th melakarta raga; arohana S R1 G3 M1 P D2 N2 S, avarohana S N2 D2 P M1 G3 R1 S; evokes pathos and devotion; a favourite of Tyagaraja who composed several kritis in this raga"
+      },
+      {
+        "id": "narayanagowla",
+        "name": "Narayanagowla",
+        "aliases": [
+          "[\"Narayana Gowla\"]"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Narayanagaula",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya raga derived from Kharaharapriya (22nd melakarta); arohana S R2 M1 P N2 S, avarohana S N2 P M1 G2 R2 S; a serious, contemplative raga used by Muthuswami Dikshitar and Tyagaraja"
+      },
+      {
+        "id": "sama",
+        "name": "Sama",
+        "aliases": [
+          "[\"Saama\"]"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Sama_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya raga of Harikambhoji (28th melakarta); arohana S R2 M1 P N2 S, avarohana S N2 D2 P M1 G3 R2 S (vakra); a gentle, devotional raga; Patnam Subramanya Iyer composed Maravakave O Manasa in this raga"
+      },
+      {
+        "id": "vasantha",
+        "name": "Vasantha",
+        "aliases": [
+          "[\"Vasanta\"",
+          "\"Basanta\"]"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Vasanta_(raga)",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya raga of Mechakalyani (65th melakarta); arohana S G3 R2 G3 M2 D2 N3 S, avarohana S N3 D2 M2 G3 R2 S (vakra); evokes spring and devotion; Sri Kamakshi Katakshi attributed to Subbaraya Sastri is set in this raga"
+      },
+      {
+        "id": "devamanohari",
+        "name": "Devamanohari",
+        "aliases": [
+          "[\"Deva Manohari\"]"
+        ],
+        "melakarta": null,
+        "parent_raga": null,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Devamanohari",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Janya raga of Harikambhoji (28th melakarta); arohana S R2 G3 P D2 S, avarohana S N2 D2 P G3 R2 S; a gentle, lyrical raga; Tyagaraja's Kanna Tandri Napai is set in this raga"
       }
     ],
     "composers": [
@@ -4886,6 +4955,20 @@
         "sources": [
           {
             "url": "https://en.wikipedia.org/wiki/Dwijendralal_Roy",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ]
+      },
+      {
+        "id": "subramanya_bharathi",
+        "name": "Subramanya Bharathi",
+        "musician_node_id": null,
+        "born": 1882,
+        "died": 1921,
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Subramania_Bharati",
             "label": "Wikipedia",
             "type": "wikipedia"
           }
@@ -7146,6 +7229,198 @@
           }
         ],
         "notes": "Tyagaraja kriti in Surutti raga, Adi tala."
+      },
+      {
+        "id": "deva_deva_kalayamide",
+        "title": "Deva Deva Kalayamide",
+        "composer_id": "swati_tirunal",
+        "raga_id": "mayamalavagowla",
+        "tala": "Rupakam",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Swati_Tirunal",
+            "label": "Wikipedia — Swati Tirunal",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Swati Tirunal kriti in Mayamalavagowla raga, Rupakam tala; a popular concert opener"
+      },
+      {
+        "id": "dinamani_vamsa",
+        "title": "Dinamani Vamsa",
+        "composer_id": "tyagaraja",
+        "raga_id": "harikambhoji",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c0437.shtml",
+            "label": "Karnatik.com — Dinamani Vamsa",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Harikambhoji raga, Adi tala"
+      },
+      {
+        "id": "sri_ramam_dikshitar",
+        "title": "Sri Ramam",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "narayanagowla",
+        "tala": "Adi",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2052.shtml",
+            "label": "Karnatik.com — Sri Ramam",
+            "type": "other"
+          }
+        ],
+        "notes": "Muthuswami Dikshitar kriti in Narayanagowla raga, Adi tala; part of the Rama Navami series"
+      },
+      {
+        "id": "tali_ninnunera",
+        "title": "Tali Ninnunera",
+        "composer_id": "shyama_shastri",
+        "raga_id": "kalyani",
+        "tala": "Misra Chapu",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2218.shtml",
+            "label": "Karnatik.com — Tali Ninnunera",
+            "type": "other"
+          }
+        ],
+        "notes": "Shyama Shastri kriti in Kalyani raga, Misra Chapu tala"
+      },
+      {
+        "id": "marubalka",
+        "title": "Marubalka",
+        "composer_id": "tyagaraja",
+        "raga_id": "sriranjini",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1388.shtml",
+            "label": "Karnatik.com — Marubalka",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Sriranjini raga, Adi tala; one of the most celebrated kritis in this raga"
+      },
+      {
+        "id": "vadanyeshwaram_bhajeham",
+        "title": "Vadanyeshwaram Bhajeham",
+        "composer_id": "muthuswami_dikshitar",
+        "raga_id": "devagandhari",
+        "tala": "Adi",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2393.shtml",
+            "label": "Karnatik.com — Vadanyeshwaram Bhajeham",
+            "type": "other"
+          }
+        ],
+        "notes": "Muthuswami Dikshitar kriti in Devagandhari raga, Adi tala; on Vadanyeshwara (Shiva at Vaitheeswaran Koil)"
+      },
+      {
+        "id": "maravakave_o_manasa",
+        "title": "Maravakave O Manasa",
+        "composer_id": "patnam_subramanya_iyer",
+        "raga_id": "sama",
+        "tala": "Rupakam",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c1380.shtml",
+            "label": "Karnatik.com — Maravakave O Manasa",
+            "type": "other"
+          }
+        ],
+        "notes": "Patnam Subramanya Iyer kriti in Sama raga, Rupakam tala"
+      },
+      {
+        "id": "sri_kamakshi_katakshi",
+        "title": "Sri Kamakshi Katakshi",
+        "composer_id": "subbaraya_sastri",
+        "raga_id": "vasantha",
+        "tala": "Adi",
+        "language": "Sanskrit",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c2082.shtml",
+            "label": "Karnatik.com — Sri Kamakshi Katakshi",
+            "type": "other"
+          }
+        ],
+        "notes": "Attributed to Subbaraya Sastri in Vasantha raga, Adi tala; authorship disputed — some sources attribute to Syama Shastri"
+      },
+      {
+        "id": "kanna_tandri_napai",
+        "title": "Kanna Tandri Napai",
+        "composer_id": "tyagaraja",
+        "raga_id": "devamanohari",
+        "tala": "Deshadi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c0780.shtml",
+            "label": "Karnatik.com — Kanna Tandri Napai",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Devamanohari raga, Deshadi tala"
+      },
+      {
+        "id": "solla_vallayo",
+        "title": "Solla Vallayo",
+        "composer_id": "subramanya_bharathi",
+        "raga_id": null,
+        "tala": "Rupakam",
+        "language": "Tamil",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Subramania_Bharati",
+            "label": "Wikipedia — Subramania Bharati",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Subramanya Bharathi Tamil song; performed as a ragamalika in concert; raga_id null as no single raga is assigned"
+      },
+      {
+        "id": "ennaga_manasuku_rani",
+        "title": "Ennaga Manasuku Rani",
+        "composer_id": "tyagaraja",
+        "raga_id": "neelambari",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://www.karnatik.com/c0534.shtml",
+            "label": "Karnatik.com — Ennaga Manasuku Rani",
+            "type": "other"
+          }
+        ],
+        "notes": "Tyagaraja kriti in Neelambari raga, Adi tala; a lullaby-like kriti often sung as a concert closer"
+      },
+      {
+        "id": "parulanna_mata",
+        "title": "Parulanna Mata",
+        "composer_id": "dharmapuri_subbaraya_iyer",
+        "raga_id": "kapi",
+        "tala": "Adi",
+        "language": "Telugu",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Dharmapuri_Subbaraya_Iyer",
+            "label": "Wikipedia — Dharmapuri Subbaraya Iyer",
+            "type": "wikipedia"
+          }
+        ],
+        "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi raga, Adi tala; a popular concert javali"
       }
     ]
   },
@@ -7211,6 +7486,19 @@
         "lalgudi_srimathi_brahmananda",
         "palghat_mani_iyer",
         "palghat_rajamani"
+      ]
+    },
+    {
+      "id": "music_academy_1966_semmangudi",
+      "path": "recordings/music_academy_1966_semmangudi.json",
+      "title": "Semmangudi Srinivasa Iyer — Madras Music Academy, 26 December 1966 (Vaak Foundation)",
+      "short_title": "Music Academy 1966",
+      "date": "1966-12-26",
+      "venue": "Madras Music Academy",
+      "primary_musician_ids": [
+        "semmangudi_srinivasa_iyer",
+        "lalgudi_jayaraman",
+        "umayalpuram_sivaraman"
       ]
     },
     {

@@ -1,0 +1,239 @@
+{
+  "id": "music_academy_1966_semmangudi",
+  "video_id": "_EYAbIrXf9k",
+  "url": "https://youtu.be/_EYAbIrXf9k",
+  "title": "Semmangudi Srinivasa Iyer — Madras Music Academy, 26 December 1966 (Vaak Foundation)",
+  "short_title": "Music Academy 1966",
+  "date": "1966-12-26",
+  "venue": "Madras Music Academy",
+  "occasion": "December Music Season 1966, Madras Music Academy; digitised from master spool by Vaak Foundation",
+  "sources": [
+    {
+      "url": "https://youtu.be/_EYAbIrXf9k",
+      "label": "YouTube — Vaak Foundation",
+      "type": "other"
+    }
+  ],
+  "sessions": [
+    {
+      "session_index": 1,
+      "performers": [
+        {
+          "musician_id": "semmangudi_srinivasa_iyer",
+          "role": "vocal"
+        },
+        {
+          "unmatched_name": "Unknown",
+          "role": "vocal_support",
+          "note": "Vocal support performer not identified in Vaak Foundation upload description"
+        },
+        {
+          "musician_id": "lalgudi_jayaraman",
+          "role": "violin"
+        },
+        {
+          "musician_id": "umayalpuram_sivaraman",
+          "role": "mridangam"
+        },
+        {
+          "unmatched_name": "K Narayanaswamy",
+          "role": "ghatam",
+          "note": "Ghatam player; no musician node exists yet for ghatam artists — flagged for future addition"
+        }
+      ],
+      "performances": [
+        {
+          "performance_index": 1,
+          "timestamp": "00:00:00",
+          "offset_seconds": 0,
+          "composition_id": "deva_deva_kalayamide",
+          "raga_id": "mayamalavagowla",
+          "tala": "rupakam",
+          "composer_id": "swati_tirunal",
+          "display_title": "Deva Deva Kalayamide",
+          "notes": "Swati Tirunal kriti in Mayamalavagowla, Rupakam tala; concert opener"
+        },
+        {
+          "performance_index": 2,
+          "timestamp": "00:10:17",
+          "offset_seconds": 617,
+          "composition_id": "dinamani_vamsa",
+          "raga_id": "harikambhoji",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Dinamani Vamsa",
+          "notes": "Tyagaraja kriti in Harikambhoji, Adi tala"
+        },
+        {
+          "performance_index": 3,
+          "timestamp": "00:26:03",
+          "offset_seconds": 1563,
+          "composition_id": "teliyaleru_rama",
+          "raga_id": "dhenuka",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Teliyaleru Rama",
+          "notes": "Tyagaraja kriti in Dhenuka, Adi tala"
+        },
+        {
+          "performance_index": 4,
+          "timestamp": "00:34:16",
+          "offset_seconds": 2056,
+          "composition_id": "sri_ramam_dikshitar",
+          "raga_id": "narayanagowla",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Sri Ramam",
+          "notes": "Muthuswami Dikshitar kriti in Narayanagowla, Adi tala"
+        },
+        {
+          "performance_index": 5,
+          "timestamp": "00:43:40",
+          "offset_seconds": 2620,
+          "composition_id": "tali_ninnunera",
+          "raga_id": "kalyani",
+          "tala": "misra_chapu",
+          "composer_id": "shyama_shastri",
+          "display_title": "Tali Ninnunera",
+          "notes": "Shyama Shastri kriti in Kalyani, Misra Chapu tala"
+        },
+        {
+          "performance_index": 6,
+          "timestamp": "01:03:00",
+          "offset_seconds": 3780,
+          "composition_id": "marubalka",
+          "raga_id": "sriranjini",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Marubalka",
+          "notes": "Tyagaraja kriti in Sriranjini, Adi tala; one of the most celebrated kritis in this raga"
+        },
+        {
+          "performance_index": 7,
+          "timestamp": "01:23:55",
+          "offset_seconds": 5035,
+          "composition_id": "vadanyeshwaram_bhajeham",
+          "raga_id": "devagandhari",
+          "tala": "adi",
+          "composer_id": "muthuswami_dikshitar",
+          "display_title": "Vadanyeshwaram Bhajeham",
+          "notes": "Muthuswami Dikshitar kriti in Devagandhari, Adi tala"
+        },
+        {
+          "performance_index": 8,
+          "timestamp": "01:38:46",
+          "offset_seconds": 5926,
+          "composition_id": "maravakave_o_manasa",
+          "raga_id": "sama",
+          "tala": "rupakam",
+          "composer_id": "patnam_subramanya_iyer",
+          "display_title": "Maravakave O Manasa",
+          "notes": "Patnam Subramanya Iyer kriti in Sama, Rupakam tala"
+        },
+        {
+          "performance_index": 9,
+          "timestamp": "01:47:04",
+          "offset_seconds": 6424,
+          "composition_id": "sri_kamakshi_katakshi",
+          "raga_id": "vasantha",
+          "tala": "adi",
+          "composer_id": "subbaraya_sastri",
+          "display_title": "Sri Kamakshi Katakshi",
+          "notes": "Attributed to Subbaraya Sastri in Vasantha, Adi tala; authorship disputed — some sources attribute to Syama Shastri"
+        },
+        {
+          "performance_index": 10,
+          "timestamp": "01:58:03",
+          "offset_seconds": 7083,
+          "composition_id": "kanna_tandri_napai",
+          "raga_id": "devamanohari",
+          "tala": "deshadi",
+          "composer_id": "tyagaraja",
+          "display_title": "Kanna Tandri Napai",
+          "notes": "Tyagaraja kriti in Devamanohari, Deshadi tala"
+        },
+        {
+          "performance_index": 11,
+          "timestamp": "02:01:52",
+          "offset_seconds": 7312,
+          "composition_id": null,
+          "raga_id": "varali",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Varali — Ragam",
+          "notes": "Ragam (alapana) in Varali; prelude to the main RTP",
+          "type": "alapana"
+        },
+        {
+          "performance_index": 12,
+          "timestamp": "02:18:21",
+          "offset_seconds": 8301,
+          "composition_id": null,
+          "raga_id": "varali",
+          "tala": null,
+          "composer_id": null,
+          "display_title": "Varali — Tanam",
+          "notes": "Tanam in Varali",
+          "type": "tanam"
+        },
+        {
+          "performance_index": 13,
+          "timestamp": "02:29:41",
+          "offset_seconds": 8981,
+          "composition_id": null,
+          "raga_id": "varali",
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Varali — Pallavi: Saravanabhava Guhane, Shanmugane",
+          "notes": "Pallavi in Varali, Adi tala (2 Kalai); Ghanaragamalika swaras in Natai, Gowlai, Arabhi, Sri",
+          "type": "pallavi"
+        },
+        {
+          "performance_index": 14,
+          "timestamp": "02:50:29",
+          "offset_seconds": 10229,
+          "composition_id": null,
+          "raga_id": null,
+          "tala": "adi",
+          "composer_id": null,
+          "display_title": "Tani Avartanam",
+          "notes": "Percussion solo (Tani Avartanam) in Adi tala (2 Kalai); Umayalpuram Sivaraman (mridangam) and K Narayanaswamy (ghatam)",
+          "type": "tani"
+        },
+        {
+          "performance_index": 15,
+          "timestamp": "03:01:02",
+          "offset_seconds": 10862,
+          "composition_id": "solla_vallayo",
+          "raga_id": null,
+          "tala": "rupakam",
+          "composer_id": "subramanya_bharathi",
+          "display_title": "Solla Vallayo",
+          "notes": "Subramanya Bharathi Tamil song; performed as a ragamalika; raga_id null as no single raga is assigned"
+        },
+        {
+          "performance_index": 16,
+          "timestamp": "03:05:33",
+          "offset_seconds": 11133,
+          "composition_id": "ennaga_manasuku_rani",
+          "raga_id": "neelambari",
+          "tala": "adi",
+          "composer_id": "tyagaraja",
+          "display_title": "Ennaga Manasuku Rani",
+          "notes": "Tyagaraja kriti in Neelambari, Adi tala; lullaby-like kriti, common concert closer"
+        },
+        {
+          "performance_index": 17,
+          "timestamp": "03:09:37",
+          "offset_seconds": 11377,
+          "composition_id": "parulanna_mata",
+          "raga_id": "kapi",
+          "tala": "adi",
+          "composer_id": "dharmapuri_subbaraya_iyer",
+          "display_title": "Parulanna Mata (Javali)",
+          "notes": "Javali by Dharmapuri Subbaraya Iyer in Kapi, Adi tala; concert finale"
+        }
+      ]
+    }
+  ]
+}
