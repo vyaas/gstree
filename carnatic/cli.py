@@ -20,6 +20,10 @@ Usage:
     python3 carnatic/cli.py lineage           <musician_id>
     python3 carnatic/cli.py recordings-for    <musician_id>
     python3 carnatic/cli.py compositions-in-raga <raga_id>
+    python3 carnatic/cli.py concerts-for      <musician_id>
+    python3 carnatic/cli.py co-performers-of  <musician_id>
+    python3 carnatic/cli.py concerts-with     <musician_id_a> <musician_id_b>
+    python3 carnatic/cli.py concert           <recording_id>  [--json]
     python3 carnatic/cli.py validate
 """
 
@@ -373,6 +377,131 @@ def cmd_compositions_in_raga(g: CarnaticGraph, args: list[str]) -> int:
     return 0
 
 
+def cmd_concerts_for(g: CarnaticGraph, args: list[str]) -> int:
+    if not args:
+        print("Usage: concerts-for <musician_id>", file=sys.stderr)
+        return 1
+    mid = args[0]
+    concerts = g.get_concerts_for_musician(mid)
+    if not concerts:
+        node = g.get_musician(mid)
+        if node is None:
+            print(f"NOT FOUND  musician \"{mid}\"")
+        else:
+            print(f"No structured concerts found for \"{mid}\"")
+        return 1
+    print(f"Concerts for {mid}:\n")
+    for c in concerts:
+        date_str = f"[{c['date']}]" if c.get("date") else ""
+        print(f"  {c['title']}   {date_str}")
+        for s in c["sessions"]:
+            performers_str = " · ".join(
+                f"{pf.get('role', '?')}: {pf.get('unmatched_name') or pf.get('musician_id', '?')}"
+                for pf in s["performers"]
+            )
+            titles = [p["display_title"] for p in s["performances"] if p.get("display_title")]
+            pieces_str = " · ".join(titles)
+            print(f"    Session {s['session_index']} — {performers_str}")
+            print(f"    {len(titles)} piece(s): {pieces_str}")
+        print()
+    return 0
+
+
+def cmd_co_performers_of(g: CarnaticGraph, args: list[str]) -> int:
+    if not args:
+        print("Usage: co-performers-of <musician_id>", file=sys.stderr)
+        return 1
+    mid = args[0]
+    co = g.get_co_performers_of(mid)
+    if not co:
+        node = g.get_musician(mid)
+        if node is None:
+            print(f"NOT FOUND  musician \"{mid}\"")
+        else:
+            print(f"No co-performers found for \"{mid}\"")
+        return 1
+    print(f"Co-performers of {mid} (across all structured recordings):\n")
+    for entry in co:
+        mid_str   = entry["musician_id"] or "[unmatched]"
+        label_str = f"\"{entry['label']}\""
+        role_str  = entry["role"]
+        recs_str  = ", ".join(entry["recording_ids"])
+        print(f"  {mid_str:<35} {label_str:<35} {role_str:<12} — {recs_str}")
+    return 0
+
+
+def cmd_concerts_with(g: CarnaticGraph, args: list[str]) -> int:
+    if len(args) < 2:
+        print("Usage: concerts-with <musician_id_a> <musician_id_b>", file=sys.stderr)
+        return 1
+    mid_a, mid_b = args[0], args[1]
+    concerts = g.get_concerts_with(mid_a, mid_b)
+    if not concerts:
+        print(f"No shared concerts found for \"{mid_a}\" and \"{mid_b}\"")
+        return 1
+    print(f"Concerts where {mid_a} and {mid_b} appeared together:\n")
+    for c in concerts:
+        date_str = f"[{c['date']}]" if c.get("date") else ""
+        print(f"  {c['title']}   {date_str}")
+        for s in c["sessions"]:
+            performers_str = " · ".join(
+                f"{pf.get('role', '?')}: {pf.get('unmatched_name') or pf.get('musician_id', '?')}"
+                for pf in s["performers"]
+            )
+            titles = [p["display_title"] for p in s["performances"] if p.get("display_title")]
+            pieces_str = " · ".join(titles)
+            print(f"    Session {s['session_index']} — {performers_str}")
+            if titles:
+                print(f"    {len(titles)} piece(s): {pieces_str}")
+        print()
+    return 0
+
+
+def cmd_concert(g: CarnaticGraph, args: list[str]) -> int:
+    want_json = "--json" in args
+    ids = [a for a in args if a != "--json"]
+    if not ids:
+        print("Usage: concert <recording_id> [--json]", file=sys.stderr)
+        return 1
+    recording_id = ids[0]
+    prog = g.get_concert_programme(recording_id)
+    if prog is None:
+        print(f"NOT FOUND  recording \"{recording_id}\"")
+        return 1
+    if want_json:
+        _dump(prog)
+        return 0
+
+    rec = prog["recording"]
+    print(f"Concert: {rec.get('title', recording_id)}")
+    print(f"Date:    {rec.get('date', 'unknown')}")
+    if rec.get("venue"):
+        print(f"Venue:   {rec['venue']}")
+    if rec.get("occasion"):
+        print(f"Occasion: {rec['occasion']}")
+    print()
+    for s in prog["sessions"]:
+        print(f"Session {s['session_index']}")
+        performers_str = " · ".join(
+            f"{pf.get('role', '?')}: {pf.get('unmatched_name') or pf.get('musician_id', '?')}"
+            for pf in s["performers"]
+        )
+        print(f"  Performers: {performers_str}")
+        print(f"  Performances:")
+        for perf in s["performances"]:
+            idx       = perf.get("performance_index", "?")
+            ts        = perf.get("timestamp", "00:00:00")
+            title     = perf.get("display_title", "?")
+            raga_obj  = perf.get("raga")
+            raga_name = raga_obj.get("name", perf.get("raga_id", "")) if raga_obj else (perf.get("raga_id") or "")
+            tala      = perf.get("tala") or ""
+            meta      = " · ".join(x for x in [raga_name, tala] if x)
+            meta_str  = f"  {meta}" if meta else ""
+            print(f"    {idx:>2}.  {ts}  {title:<35}{meta_str}")
+        print()
+    return 0
+
+
 def cmd_validate(g: CarnaticGraph, _args: list[str]) -> int:
     errors: list[str] = []
 
@@ -478,6 +607,10 @@ COMMANDS: dict[str, object] = {
     "lineage":              cmd_lineage,
     "recordings-for":       cmd_recordings_for,
     "compositions-in-raga": cmd_compositions_in_raga,
+    "concerts-for":         cmd_concerts_for,
+    "co-performers-of":     cmd_co_performers_of,
+    "concerts-with":        cmd_concerts_with,
+    "concert":              cmd_concert,
     "validate":             cmd_validate,
 }
 

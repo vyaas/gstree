@@ -432,6 +432,180 @@ class CarnaticGraph:
             "sessions":  sessions_out,
         }
 
+    # ── Concert-bracket queries (ADR-018) ─────────────────────────────────────
+
+    def get_concerts_for_musician(self, musician_id: str) -> list[dict]:
+        """
+        Return a list of concert bracket dicts for the given musician.
+
+        Each dict:
+          {
+            "recording_id": str,
+            "title":        str,
+            "short_title":  str,
+            "date":         str | None,
+            "sessions": [
+              {
+                "session_index": int,
+                "performers":    [...],
+                "performances":  [...],   # PerformanceRef list
+              }
+            ]
+          }
+
+        Only sessions in which the musician appears are included.
+        Concerts are sorted chronologically by date (nulls last).
+        """
+        if not self.get_musician(musician_id):
+            return []
+
+        concert_map: dict[str, dict] = {}
+        for rec in self.get_recordings_for_musician(musician_id):
+            rid = rec["id"]
+            for session in rec.get("sessions", []):
+                performers = session.get("performers", [])
+                if not any(p.get("musician_id") == musician_id for p in performers):
+                    continue
+                if rid not in concert_map:
+                    concert_map[rid] = {
+                        "recording_id": rid,
+                        "title":        rec.get("title", ""),
+                        "short_title":  rec.get("short_title", ""),
+                        "date":         rec.get("date"),
+                        "sessions":     [],
+                    }
+                perfs = [
+                    self._make_perf_ref(rec, session, p, performers)
+                    for p in session.get("performances", [])
+                ]
+                concert_map[rid]["sessions"].append({
+                    "session_index": session["session_index"],
+                    "performers":    performers,
+                    "performances":  perfs,
+                })
+
+        def _year(c: dict) -> int:
+            d = c.get("date")
+            try:
+                return int(str(d)[:4]) if d else 9999
+            except (ValueError, TypeError):
+                return 9999
+
+        concerts = sorted(concert_map.values(), key=_year)
+        for c in concerts:
+            c["sessions"].sort(key=lambda s: s["session_index"])
+        return concerts
+
+    def get_co_performers_of(self, musician_id: str) -> list[dict]:
+        """
+        Return a deduplicated list of co-performer dicts for the given musician.
+
+        Each dict:
+          {
+            "musician_id":   str | None,
+            "label":         str,
+            "role":          str,
+            "recording_ids": list[str],
+          }
+
+        Sorted: matched musicians first (by label), then unmatched (by name).
+        The given musician is excluded from their own list.
+        """
+        if not self.get_musician(musician_id):
+            return []
+
+        # key → {musician_id, label, role, recording_ids set}
+        seen: dict[str, dict] = {}
+
+        for rec in self.get_recordings_for_musician(musician_id):
+            rid = rec["id"]
+            for session in rec.get("sessions", []):
+                performers = session.get("performers", [])
+                if not any(p.get("musician_id") == musician_id for p in performers):
+                    continue
+                for pf in performers:
+                    mid = pf.get("musician_id")
+                    if mid == musician_id:
+                        continue
+                    unmatched = pf.get("unmatched_name", "")
+                    key = mid if mid else ("_" + (unmatched or "?"))
+                    if key not in seen:
+                        if mid:
+                            node = self._musician_by_id.get(mid)
+                            label = node.get("label", mid) if node else mid
+                        else:
+                            label = unmatched or "?"
+                        seen[key] = {
+                            "musician_id":   mid,
+                            "label":         label,
+                            "role":          pf.get("role", ""),
+                            "recording_ids": set(),
+                        }
+                    seen[key]["recording_ids"].add(rid)
+
+        result = []
+        for entry in seen.values():
+            result.append({
+                "musician_id":   entry["musician_id"],
+                "label":         entry["label"],
+                "role":          entry["role"],
+                "recording_ids": sorted(entry["recording_ids"]),
+            })
+
+        # Matched first (by label), then unmatched (by label/name)
+        result.sort(key=lambda x: (0 if x["musician_id"] else 1, x["label"].lower()))
+        return result
+
+    def get_concerts_with(self, musician_id_a: str, musician_id_b: str) -> list[dict]:
+        """
+        Return concert bracket dicts (same shape as get_concerts_for_musician)
+        for concerts where both musicians appear in the SAME session.
+
+        Only sessions containing both musicians are included.
+        Sorted chronologically.
+        """
+        # Collect recording_ids where musician_a appears
+        recs_a = {rec["id"]: rec for rec in self.get_recordings_for_musician(musician_id_a)}
+
+        concert_map: dict[str, dict] = {}
+        for rid, rec in recs_a.items():
+            for session in rec.get("sessions", []):
+                performers = session.get("performers", [])
+                ids_in_session = {p.get("musician_id") for p in performers}
+                if musician_id_a not in ids_in_session:
+                    continue
+                if musician_id_b not in ids_in_session:
+                    continue
+                if rid not in concert_map:
+                    concert_map[rid] = {
+                        "recording_id": rid,
+                        "title":        rec.get("title", ""),
+                        "short_title":  rec.get("short_title", ""),
+                        "date":         rec.get("date"),
+                        "sessions":     [],
+                    }
+                perfs = [
+                    self._make_perf_ref(rec, session, p, performers)
+                    for p in session.get("performances", [])
+                ]
+                concert_map[rid]["sessions"].append({
+                    "session_index": session["session_index"],
+                    "performers":    performers,
+                    "performances":  perfs,
+                })
+
+        def _year(c: dict) -> int:
+            d = c.get("date")
+            try:
+                return int(str(d)[:4]) if d else 9999
+            except (ValueError, TypeError):
+                return 9999
+
+        concerts = sorted(concert_map.values(), key=_year)
+        for c in concerts:
+            c["sessions"].sort(key=lambda s: s["session_index"])
+        return concerts
+
     # ── internal helpers ───────────────────────────────────────────────────────
 
     @staticmethod

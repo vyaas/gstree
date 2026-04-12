@@ -1,6 +1,6 @@
 # ADR-018: Concert-Bracketed Recording Groups in the Musician Panel
 
-**Status:** Proposed  
+**Status:** Accepted
 **Date:** 2026-04-12
 
 ---

@@ -174,14 +174,80 @@
   /* ── unified recordings panel ── */
   #recordings-panel { display: none; }
   #recordings-list { list-style: none; margin-top: 4px; }
-  #recordings-list li {
+
+  /* ── concert bracket (ADR-018) ── */
+  .concert-bracket {
+    border-bottom: 1px solid var(--bg2);
+    padding: 0;
+  }
+  .concert-bracket:last-child { border-bottom: none; }
+
+  .concert-header {
+    display: flex; align-items: flex-start; gap: 6px;
+    padding: 6px 0; cursor: pointer;
+  }
+  .concert-header:hover .concert-title { color: var(--yellow); }
+
+  .concert-chevron {
+    font-size: 0; color: var(--gray);
+    flex-shrink: 0; margin-top: 3px; width: 10px; text-align: center;
+    user-select: none;
+  }
+  .concert-chevron::before { font-size: 0.60rem; content: '▶'; }
+  .concert-bracket.expanded .concert-chevron::before { content: '▼'; }
+
+  .concert-header-body { flex: 1; min-width: 0; }
+
+  .concert-title-row {
+    display: flex; align-items: baseline; gap: 4px; width: 100%;
+  }
+  .concert-title {
+    font-size: 0.78rem; font-weight: bold; color: var(--fg1);
+    flex: 1; min-width: 0;
+  }
+  .concert-date {
+    font-size: 0.68rem; color: var(--gray);
+    flex-shrink: 0; margin-left: auto; padding-left: 6px;
+  }
+
+  .concert-performers {
+    font-size: 0.68rem; color: var(--fg3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .concert-bracket.expanded .concert-performers {
+    white-space: normal;
+  }
+
+  .concert-count {
+    font-size: 0.65rem; color: var(--gray); margin-top: 2px;
+  }
+  .concert-bracket.expanded .concert-count { display: none; }
+
+  /* ── composition list inside bracket ── */
+  .concert-perf-list {
+    list-style: none;
+    padding-left: 16px;
+    margin-bottom: 4px;
+  }
+  .concert-perf-item {
+    padding: 4px 0; border-bottom: 1px solid var(--bg2);
+    cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+  }
+  .concert-perf-item:last-child { border-bottom: none; }
+  .concert-perf-item:hover .rec-title { color: var(--yellow); }
+  .concert-perf-item.playing .rec-title { color: var(--aqua); }
+
+  /* ── legacy flat items ── */
+  li.rec-legacy {
     padding: 5px 0; border-bottom: 1px solid var(--bg2);
     cursor: pointer; display: flex; flex-direction: column; gap: 2px;
     line-height: 1.4;
   }
-  #recordings-list li:last-child { border-bottom: none; }
-  #recordings-list li:hover { color: var(--yellow); }
-  #recordings-list li.playing { color: var(--aqua); }
+  li.rec-legacy:last-child { border-bottom: none; }
+  li.rec-legacy:hover .rec-title { color: var(--yellow); }
+  li.rec-legacy.playing .rec-title { color: var(--aqua); }
+
   .rec-row1 { display: flex; align-items: baseline; width: 100%; gap: 4px; }
   .rec-title {
     color: var(--yellow); font-weight: bold; font-size: 0.74rem;
@@ -37205,7 +37271,154 @@ function openOrFocusPlayer(vid, label, artistName, startSeconds) {
   refreshPlayingIndicators();
 }
 
-// ── buildRecordingsList — unified legacy + structured recordings ───────────────
+// ── toggleConcert — expand/collapse a concert bracket (ADR-018) ───────────────
+function toggleConcert(headerEl) {
+  const bracket = headerEl.closest('.concert-bracket');
+  const list    = bracket.querySelector('.concert-perf-list');
+  const isOpen  = bracket.classList.contains('expanded');
+  if (isOpen) {
+    bracket.classList.remove('expanded');
+    list.style.display = 'none';
+  } else {
+    bracket.classList.add('expanded');
+    list.style.display = 'block';
+  }
+}
+
+// ── buildConcertBracket — build one concert bracket DOM element ───────────────
+function buildConcertBracket(concert, nodeId, artistLabel) {
+  // Collect all performers across all sessions, deduplicated, excluding self
+  const coPerformerMap = new Map();
+  let totalPieces = 0;
+  concert.sessions.forEach(session => {
+    totalPieces += session.perfs.length;
+    session.performers.forEach(pf => {
+      if (pf.musician_id === nodeId) return;
+      const key   = pf.musician_id || ('_' + (pf.unmatched_name || '?'));
+      if (coPerformerMap.has(key)) return;
+      let label;
+      if (pf.musician_id) {
+        const node = cy.getElementById(pf.musician_id);
+        label = (node && node.length > 0) ? (node.data('label') || pf.musician_id) : pf.musician_id;
+      } else {
+        label = pf.unmatched_name || '?';
+      }
+      coPerformerMap.set(key, label);
+    });
+  });
+  const coPerformers = [...coPerformerMap.values()].join(', ');
+
+  const bracket = document.createElement('div');
+  bracket.className = 'concert-bracket';
+  bracket.dataset.recordingId = concert.recording_id;
+
+  // ── header ────────────────────────────────────────────────────────────────
+  const header = document.createElement('div');
+  header.className = 'concert-header';
+  header.setAttribute('onclick', 'toggleConcert(this)');
+
+  const chevron = document.createElement('span');
+  chevron.className = 'concert-chevron';
+
+  const headerBody = document.createElement('div');
+  headerBody.className = 'concert-header-body';
+
+  const titleRow = document.createElement('div');
+  titleRow.className = 'concert-title-row';
+
+  const titleSpan = document.createElement('span');
+  titleSpan.className = 'concert-title';
+  titleSpan.textContent = concert.short_title || concert.title;
+
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'concert-date';
+  dateSpan.textContent = concert.date || '';
+
+  titleRow.appendChild(titleSpan);
+  titleRow.appendChild(dateSpan);
+
+  const performersDiv = document.createElement('div');
+  performersDiv.className = 'concert-performers';
+  performersDiv.textContent = coPerformers;
+
+  const countDiv = document.createElement('div');
+  countDiv.className = 'concert-count';
+  countDiv.textContent = totalPieces + (totalPieces === 1 ? ' piece' : ' pieces');
+
+  headerBody.appendChild(titleRow);
+  if (coPerformers) headerBody.appendChild(performersDiv);
+  headerBody.appendChild(countDiv);
+
+  header.appendChild(chevron);
+  header.appendChild(headerBody);
+  bracket.appendChild(header);
+
+  // ── composition list ──────────────────────────────────────────────────────
+  const perfList = document.createElement('ul');
+  perfList.className = 'concert-perf-list';
+  perfList.style.display = 'none';
+
+  concert.sessions.forEach(session => {
+    // Sort perfs within session by offset_seconds
+    const sortedPerfs = session.perfs.slice().sort(
+      (a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0)
+    );
+    sortedPerfs.forEach(p => {
+      const li = document.createElement('li');
+      li.className = 'concert-perf-item' + (playerRegistry.has(p.video_id) ? ' playing' : '');
+      li.dataset.vid = p.video_id;
+      li.addEventListener('click', () =>
+        openOrFocusPlayer(p.video_id, p.display_title, artistLabel,
+                          p.offset_seconds > 0 ? p.offset_seconds : undefined));
+
+      // Row 1: composition title
+      const row1 = document.createElement('div');
+      row1.className = 'rec-row1';
+      const titleEl = document.createElement('span');
+      titleEl.className = 'rec-title';
+      if (p.composition_id) {
+        const comp = compositions.find(c => c.id === p.composition_id);
+        titleEl.textContent = comp ? comp.title : (p.display_title || '');
+      } else {
+        const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[p.type] || '';
+        titleEl.textContent = typeIcon + (p.display_title || '');
+      }
+      row1.appendChild(titleEl);
+
+      // Row 2: raga · tala + timestamp link
+      const row2 = document.createElement('div');
+      row2.className = 'rec-row2';
+      const metaSpan = document.createElement('span');
+      metaSpan.className = 'rec-meta';
+      const ragaObj = p.raga_id ? ragas.find(r => r.id === p.raga_id) : null;
+      const ragaName = ragaObj ? ragaObj.name : (p.raga_id || '');
+      const talaPart = p.tala || '';
+      metaSpan.textContent = [ragaName, talaPart].filter(Boolean).join(' · ');
+
+      const linkA = document.createElement('a');
+      linkA.className = 'rec-link';
+      linkA.href      = ytDirectUrl(p.video_id, p.offset_seconds > 0 ? p.offset_seconds : undefined);
+      linkA.target    = '_blank';
+      linkA.textContent = (p.offset_seconds > 0
+        ? formatTimestamp(p.offset_seconds)
+        : '00:00') + ' ↗';
+      linkA.title = 'Open in YouTube at this timestamp';
+      linkA.addEventListener('click', e => e.stopPropagation());
+
+      row2.appendChild(metaSpan);
+      row2.appendChild(linkA);
+
+      li.appendChild(row1);
+      li.appendChild(row2);
+      perfList.appendChild(li);
+    });
+  });
+
+  bracket.appendChild(perfList);
+  return bracket;
+}
+
+// ── buildRecordingsList — concert-bracketed + legacy flat (ADR-018) ───────────
 function buildRecordingsList(nodeId, nodeData) {
   const recPanel  = document.getElementById('recordings-panel');
   const recList   = document.getElementById('recordings-list');
@@ -37215,142 +37428,104 @@ function buildRecordingsList(nodeId, nodeData) {
   const nd = nodeData || cy.getElementById(nodeId).data();
   const legacyTracks    = nd.tracks || [];
   const structuredPerfs = musicianToPerformances[nodeId] || [];
+  const artistLabel     = nd.label || '';
 
-  const allRecs = [];
-
-  legacyTracks.forEach(t => {
-    allRecs.push({
-      vid:            t.vid,
-      title:          t.label,
-      composition_id: t.composition_id || null,
-      raga_id:        t.raga_id        || null,
-      year:           t.year           || null,
-      offset_seconds: 0,
-      tala:           null,
-      context:        null,
-      type:           t.type           || null,
-      isLegacy:       true,
-    });
-  });
-
+  // ── 1. Group structured perfs by recording_id → session_index ────────────
+  const concertMap = new Map();
   structuredPerfs.forEach(p => {
-    allRecs.push({
-      vid:            p.video_id,
-      title:          p.display_title,
-      composition_id: p.composition_id || null,
-      raga_id:        p.raga_id        || null,
-      year:           p.date ? parseInt(p.date) : null,
-      offset_seconds: p.offset_seconds || 0,
-      tala:           p.tala           || null,
-      context:        p.short_title || p.date || null,
-      type:           p.type           || null,
-      isLegacy:       false,
-    });
-  });
-
-  // Sort: year asc (nulls last), performances before non-performances,
-  // then same-concert tracks by offset_seconds (concert order), then title
-  allRecs.sort((a, b) => {
-    if (a.year !== b.year) {
-      if (a.year == null) return 1;
-      if (b.year == null) return -1;
-      return a.year - b.year;
+    if (!concertMap.has(p.recording_id)) {
+      concertMap.set(p.recording_id, {
+        recording_id: p.recording_id,
+        title:        p.title,
+        short_title:  p.short_title,
+        date:         p.date,
+        year:         p.date ? parseInt(p.date) : null,
+        sessions:     new Map(),
+      });
     }
-    const aIsPerf = !!(a.composition_id && a.raga_id);
-    const bIsPerf = !!(b.composition_id && b.raga_id);
-    if (aIsPerf !== bIsPerf) return aIsPerf ? -1 : 1;
-    // Same concert (same video_id) → preserve concert order by timestamp
-    if (a.vid && a.vid === b.vid) return (a.offset_seconds || 0) - (b.offset_seconds || 0);
-    return (a.title || '').localeCompare(b.title || '');
+    const concert = concertMap.get(p.recording_id);
+    if (!concert.sessions.has(p.session_index)) {
+      concert.sessions.set(p.session_index, {
+        session_index: p.session_index,
+        performers:    p.performers || [],
+        perfs:         [],
+      });
+    }
+    concert.sessions.get(p.session_index).perfs.push(p);
   });
 
-  const artistLabel = nd.label || '';
+  // Sort concerts chronologically (nulls last)
+  const concerts = [...concertMap.values()].sort((a, b) => {
+    if (a.year == null) return 1;
+    if (b.year == null) return -1;
+    return a.year - b.year;
+  });
 
-  allRecs.forEach(rec => {
+  // Flatten sessions map to sorted array
+  concerts.forEach(c => {
+    c.sessions = [...c.sessions.values()].sort(
+      (a, b) => a.session_index - b.session_index
+    );
+  });
+
+  concerts.forEach(concert => {
+    const bracket = buildConcertBracket(concert, nodeId, artistLabel);
+    recList.appendChild(bracket);
+  });
+
+  // ── 2. Legacy tracks as flat items (sorted by year) ───────────────────────
+  const sortedLegacy = legacyTracks.slice().sort((a, b) => {
+    if (a.year == null) return 1;
+    if (b.year == null) return -1;
+    return a.year - b.year;
+  });
+
+  sortedLegacy.forEach(t => {
     const li = document.createElement('li');
-    li.dataset.vid = rec.vid;
-    li.className   = playerRegistry.has(rec.vid) ? 'playing' : '';
+    li.className = 'rec-legacy' + (playerRegistry.has(t.vid) ? ' playing' : '');
+    li.dataset.vid = t.vid;
     li.addEventListener('click', () =>
-      openOrFocusPlayer(rec.vid, rec.title, artistLabel,
-                        rec.offset_seconds > 0 ? rec.offset_seconds : undefined));
+      openOrFocusPlayer(t.vid, t.label, artistLabel, undefined));
 
-    // Row 1: title + year
     const row1 = document.createElement('div');
     row1.className = 'rec-row1';
-
     const titleSpan = document.createElement('span');
     titleSpan.className = 'rec-title';
-    if (rec.composition_id && rec.raga_id) {
-      const comp = compositions.find(c => c.id === rec.composition_id);
-      titleSpan.textContent = comp ? comp.title : rec.title;
-    } else {
-      const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[rec.type] || '';
-      titleSpan.textContent = typeIcon + (rec.title || '');
-    }
-
+    const typeIcon = { interview: '🎤 ', lecture: '🎓 ', radio: '📻 ' }[t.type] || '';
+    titleSpan.textContent = typeIcon + (t.label || '');
     const yearSpan = document.createElement('span');
     yearSpan.className = 'rec-year';
-    yearSpan.textContent = '';
-
+    yearSpan.textContent = t.year ? String(t.year) : '';
     row1.appendChild(titleSpan);
     row1.appendChild(yearSpan);
 
-    // Build the YouTube link (shared by all rows)
-    const linkA = document.createElement('a');
-    linkA.className = 'rec-link';
-    linkA.href      = ytDirectUrl(rec.vid, rec.offset_seconds > 0 ? rec.offset_seconds : undefined);
-    linkA.target    = '_blank';
-    linkA.textContent = rec.offset_seconds > 0
-      ? formatTimestamp(rec.offset_seconds) + ' ↗'
-      : '00:00 ↗';
-    linkA.title = rec.offset_seconds > 0
-      ? 'Open in YouTube at this timestamp'
-      : 'Open in YouTube';
-    linkA.addEventListener('click', e => e.stopPropagation());
-
-    // Row 2: raga name (composition) or context (non-composition)
     const row2 = document.createElement('div');
     row2.className = 'rec-row2';
-    const ragaSpan = document.createElement('span');
-    ragaSpan.className = 'rec-meta';
-    if (rec.composition_id && rec.raga_id) {
-      const ragaObj = ragas.find(r => r.id === rec.raga_id);
-      ragaSpan.textContent = ragaObj ? ragaObj.name : (rec.raga_id || '');
-    } else {
-      ragaSpan.textContent = rec.context || '';
+    const metaSpan = document.createElement('span');
+    metaSpan.className = 'rec-meta';
+    if (t.raga_id) {
+      const ragaObj = ragas.find(r => r.id === t.raga_id);
+      metaSpan.textContent = ragaObj ? ragaObj.name : t.raga_id;
     }
-    row2.appendChild(ragaSpan);
+    const linkA = document.createElement('a');
+    linkA.className = 'rec-link';
+    linkA.href      = ytDirectUrl(t.vid, undefined);
+    linkA.target    = '_blank';
+    linkA.textContent = '00:00 ↗';
+    linkA.title = 'Open in YouTube';
+    linkA.addEventListener('click', e => e.stopPropagation());
+    row2.appendChild(metaSpan);
+    row2.appendChild(linkA);
 
-    // Row 3 (only when context exists): context + link
-    // When no context: link goes on row 2 alongside raga
-    const hasContext = !!(rec.composition_id && rec.raga_id && rec.context);
-    if (hasContext) {
-      const row3 = document.createElement('div');
-      row3.className = 'rec-row3';
-      const ctxSpan = document.createElement('span');
-      ctxSpan.className = 'rec-meta';
-      ctxSpan.textContent = rec.context;
-      row3.appendChild(ctxSpan);
-      row3.appendChild(linkA);
-      li.appendChild(row1);
-      li.appendChild(row2);
-      li.appendChild(row3);
-    } else {
-      // No context — link shares row 2 with raga
-      row2.appendChild(linkA);
-      li.appendChild(row1);
-      li.appendChild(row2);
-    }
+    li.appendChild(row1);
+    li.appendChild(row2);
     recList.appendChild(li);
   });
 
-  if (allRecs.length > 0) {
-    recPanel.style.display  = 'block';
-    recFilter.style.display = 'block';
-  } else {
-    recPanel.style.display  = 'none';
-    recFilter.style.display = 'none';
-  }
+  // ── 3. Show/hide panel ────────────────────────────────────────────────────
+  const hasContent = concerts.length > 0 || legacyTracks.length > 0;
+  recPanel.style.display  = hasContent ? 'block' : 'none';
+  recFilter.style.display = hasContent ? 'block' : 'none';
 }
 
 // ── selectNode — shared selection logic (sidebar + graph highlight) ───────────
@@ -37397,16 +37572,50 @@ function selectNode(node) {
   node.connectedEdges().connectedNodes().removeClass('faded');
 }
 
-// ── rec-filter event listener ─────────────────────────────────────────────────
+// ── rec-filter event listener — bracket-aware (ADR-018) ──────────────────────
 document.getElementById('rec-filter').addEventListener('input', function() {
   const q       = this.value.toLowerCase().trim();
   const recList = document.getElementById('recordings-list');
-  const items   = recList.querySelectorAll('li:not(.rec-no-match)');
   let anyVisible = false;
 
-  items.forEach(li => {
+  // ── concert brackets ──────────────────────────────────────────────────────
+  recList.querySelectorAll('.concert-bracket').forEach(bracket => {
+    const items = bracket.querySelectorAll('.concert-perf-item');
+    let bracketHasMatch = false;
+
+    items.forEach(li => {
+      if (!q) {
+        li.style.display = 'flex';
+        bracketHasMatch = true;
+        return;
+      }
+      const titleText = (li.querySelector('.rec-title') || {}).textContent || '';
+      const metaText  = (li.querySelector('.rec-meta')  || {}).textContent || '';
+      const matches   = titleText.toLowerCase().includes(q) ||
+                        metaText.toLowerCase().includes(q);
+      li.style.display = matches ? 'flex' : 'none';
+      if (matches) bracketHasMatch = true;
+    });
+
+    if (!q) {
+      // Reset: collapse all brackets
+      bracket.style.display = 'block';
+      bracket.classList.remove('expanded');
+      bracket.querySelector('.concert-perf-list').style.display = 'none';
+      anyVisible = true;
+    } else if (bracketHasMatch) {
+      bracket.style.display = 'block';
+      bracket.classList.add('expanded');
+      bracket.querySelector('.concert-perf-list').style.display = 'block';
+      anyVisible = true;
+    } else {
+      bracket.style.display = 'none';
+    }
+  });
+
+  // ── legacy flat items ─────────────────────────────────────────────────────
+  recList.querySelectorAll('li.rec-legacy').forEach(li => {
     if (!q) { li.style.display = 'flex'; anyVisible = true; return; }
-    // Match only musicological content — title and meta, not year or timestamp
     const titleText = (li.querySelector('.rec-title') || {}).textContent || '';
     const metaText  = (li.querySelector('.rec-meta')  || {}).textContent || '';
     const matches   = titleText.toLowerCase().includes(q) ||
@@ -37415,6 +37624,7 @@ document.getElementById('rec-filter').addEventListener('input', function() {
     if (matches) anyVisible = true;
   });
 
+  // ── no-match sentinel ─────────────────────────────────────────────────────
   let noMatch = recList.querySelector('.rec-no-match');
   if (!anyVisible && q) {
     if (!noMatch) {
