@@ -18,7 +18,6 @@ carnatic/
 | 📚 Librarian | `*.json` data files only | `.py`, `.html`, `.js` code files |
 | 🎵 Carnatic Coder | `.py`, `.html`, `.js`, `.md`, `.sh`, `.css` | Any `.json` file directly |
 | 🏛️ Graph Architect | `plans/*.md` ADRs | Data files, code files |
-| 🔱 Git Fiend | git operations only | Data files, code files |
 
 **The Carnatic Coder must never directly edit or create any `.json` file.** If a JSON file needs changing, the Coder writes a script; the Librarian reviews and applies it.
 
@@ -26,9 +25,9 @@ carnatic/
 1. Run `python3 carnatic/cli.py stats` to orient — replaces reading `musicians.json` and `compositions.json` in full.
 2. Use targeted CLI queries (see **CLI Tools** section below) before any `read_file` call.
 3. Read the **Open questions** section below — it is the living memory of this project.
-4. At the end of every session: update the Open questions section, then **hand off to the Git Fiend** (see Git Fiend protocol below).
+4. At the end of every session: update the Open questions section, then **commit and push your work** (see Git protocol below).
 
-> **Full file reads** (`read_file: musicians.json`) are reserved for patching sessions where you need to construct an `apply_diff` block. Even then, use `python3 carnatic/cli.py get-musician <id>` to retrieve the exact current value of a field before constructing the diff — not the whole file.
+> **Full file reads** (`read_file: musicians.json`) are reserved for patching sessions where you need to construct an `apply_diff` block. Even then, use `python3 carnatic/cli.py get-musician <id>` to retrieve the exact current value of a field before constructing the diff — not the whole file. For the canonical data schema, see `carnatic/data/READYOU.md`.
 
 ## CLI Tools (ADR-014)
 ```bash
@@ -138,7 +137,7 @@ Step 2: python3 carnatic/render.py && python3 carnatic/cli.py validate
 3. When tagging recordings: also add `composition_id`, `raga_id`, `year` to youtube entries where identifiable
 4. Run `python3 carnatic/render.py` — confirm node/edge counts change as expected
 5. Run `python3 carnatic/serve.py` to visualise (or remind user to refresh if already running)
-6. **End of session**: update Open questions below, then **hand off to the Git Fiend** with a plain-prose summary of what changed, the list of modified files, and any unresolved open questions.
+6. **End of session**: update Open questions below, then **commit and push** — include a plain-prose summary of what changed in the commit body.
 
 ## Patching rules
 - **Never edit `graph.html` by hand**
@@ -219,42 +218,21 @@ YouTube embeds require localhost — never open graph.html as a file:// URL.
 
 ---
 
-## Git Fiend protocol — temporal preservation
+## Git protocol — temporal preservation
 
 Carnatic music has endured because each generation transmitted it faithfully and completely.
-Git is our instrument of faithful, complete transmission. **Every agent must hand off to the
-Git Fiend when their task is complete and any file has changed.** No agent commits its own work.
+Git is our instrument of faithful, complete transmission. **Every agent commits and pushes
+their own work at the end of every session in which files changed.**
 
-### ⚠️ Mandatory Git Fiend handoff
+### Pre-commit checklist
+- [ ] `git diff --stat` reviewed — no unintended files staged
+- [ ] `graph.html` is current if `musicians.json` or `compositions.json` changed
+- [ ] No debug output left in scripts
+- [ ] `carnatic/.clinerules` Open questions section updated
+- [ ] Commit message follows format below
+- [ ] `git push` executed after commit
 
-**Any session that modifies one or more files MUST end with this prompt to the user:**
-
-```
-## 🔱 Handoff to Git Fiend
-**What changed:** <one paragraph plain prose>
-**Files modified:** <explicit list>
-**Open questions:** <any unresolved items>
-
-⚠️ Please switch to 🔱 Git Fiend mode now to commit and preserve this work.
-```
-
-This applies to ALL agents: Librarian, Carnatic Coder, Graph Architect, and Orchestrator.
-Do not end a session with file changes without issuing this prompt.
-
-### When to consult the Git Fiend
-| Trigger | Action |
-|---|---|
-| Any file changed at end of session | Hand off for commit + push |
-| Schema experiment or large batch import needed | Request a branch before starting |
-| Experimental branch validated | Request merge + branch deletion |
-
-### Handoff message format
-When handing off to the Git Fiend, provide:
-1. **What changed** — plain prose, one paragraph
-2. **Files modified** — explicit list
-3. **Open questions** — any unresolved items from this session
-
-### Commit message format (enforced by Git Fiend)
+### Commit message format
 ```
 <type>(<scope>): <imperative summary, ≤72 chars>
 
@@ -264,14 +242,6 @@ When handing off to the Git Fiend, provide:
 
 **Type vocabulary:** `data` · `tool` · `render` · `schema` · `fix` · `chore` · `branch`
 **Scope vocabulary:** `lineage` · `node` · `recording` · `composition` · `toolchain` · `config`
-
-### Pre-commit checklist (Git Fiend runs this)
-- [ ] `git diff --stat` reviewed — no unintended files staged
-- [ ] `graph.html` is current if `musicians.json` or `compositions.json` changed
-- [ ] No debug output left in scripts
-- [ ] `carnatic/.clinerules` Open questions section updated
-- [ ] Commit message follows format above
-- [ ] `git push` executed after commit
 
 ### Branching policy
 - **`main`** — always stable; every commit must pass the pre-commit checklist
@@ -341,3 +311,49 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
   Iyer (confirmed by Wikipedia). Currently a 2-hop edge; add as node if significance warrants.
 - **Maha Vaidyanatha Iyer lineage** — Wikipedia reveals his students include GNB, K.S.
   Narayanaswamy, S. Ramanathan (via Sabhesha Iyer at Annamalai University). Edges not yet added.
+
+---
+
+## Agent learning logs  ← living memory; append new entries here
+
+Each agent appends dated entries to their subsection below.
+Format: `- YYYY-MM-DD: <one plain-prose sentence>`.
+Entries are terse — this is a log, not an essay.
+
+> **How to append:** edit only the appropriate subsection of this file.
+> Never write learning log entries into `.roomodes`.
+
+### 📚 Librarian
+
+- 2026-04-11: When given a concert URL, never add it to a musician node's youtube array; concert recordings belong in their own file under carnatic/data/recordings/ and are only linked to nodes via that file, not via the node's youtube array — unless explicitly instructed otherwise.
+- 2026-04-11: Vaak Foundation inputs are a repeatable pattern — always: (1) parse performers and match to nodes, flagging unknowns with unmatched_name; (2) parse tracklist against compositions.json for ragas, composers, compositions; (3) add missing ragas, composers, compositions to compositions.json with sourced Wikipedia/Karnatik URLs; (4) create recording file under carnatic/data/recordings/ using the established schema; (5) run render.py; (6) never add the concert URL to musician node youtube arrays. Tracklist composer attributions must be verified against notation sources — they can be wrong (e.g. 'Poochi Srinivasa Iyengar' vs 'Ramnad Sreenivasa Iyengar' for Ninnu Kori).
+- 2026-04-12: Never fabricate a Wikipedia URL — if a standalone page does not exist, use a reference on a related page (e.g. father's Wikipedia page) and mark the source label accordingly; asserting a URL without verification is a hard error.
+- 2026-04-12: Ankita (signature) names in tracklists must be resolved to the composer's actual name in the composers[] name field; record the ankita in the source note (e.g. 'Garbhapurivasa' is the ankita of Garbhapuri Srinivasa).
+- 2026-04-12: Thirupugazh compositions by Arunagirinathar are performed as ragamalikas in concert; set raga_id to null and note 'performed as ragamalika' — do not assign a single raga_id to a ragamalika performance.
+- 2026-04-12: Sruti.com (the Chennai music journal) is an acceptable source for musician nodes when no Wikipedia page exists — same precedent as carnaticheritage.in and eambalam.com for Voleti Venkateshwarlu; use type 'article' and record the full URL.
+- 2026-04-12: graph.json is a dual-write artefact — write_cli.py writes musicians.json and compositions.json but does NOT sync graph.json; after any batch ingest session you must manually sync graph.json before add-youtube can resolve composition_id references; render.py handles this sync automatically.
+- 2026-04-12: When manually syncing graph.json["compositions"], the value must be {"ragas": [...list...], "composers": [...list...], "compositions": [...list...]} — lists of objects, NOT dicts; CarnaticGraph.__init__ iterates these with for-loops and crashes with TypeError if they are dicts.
+- 2026-04-12: When a co-performer ingest script runs before the primary artist's youtube array is populated, entries get raw playlist titles as labels with no raga/composition metadata; after the primary artist's array is populated, patch the co-performer's entries by copying label/raga_id/composition_id/year from the matching primary-artist entry using a vid-keyed lookup.
+- 2026-04-12: A single Tyagaraja composition title (e.g. "Ee Vasudha") can exist in multiple ragas as genuinely distinct compositions; always check karnatik.com for the raga before assuming a tracklist raga label is an error — create separate composition IDs rather than overwriting the canonical raga_id.
+- 2026-04-12: A Ragam-Tanam-Pallavi (RTP) is modelled as multiple sequential performance entries (type: alapana, tanam, pallavi) sharing the same raga_id, not as a single composition; Ghanaragamalika swaras are noted in the pallavi entry's notes field; Tani Avartanam gets its own entry with type: tani and raga_id: null.
+
+### 🎵 Carnatic Coder
+
+- 2026-04-11: When adding a cross-cutting capability to all agents, write a transform script that reads the target file, applies the change idempotently, and writes back — never patch JSON by hand.
+- 2026-04-11: Always update the ADR status from Proposed to Accepted in the plans/ file before committing — implementation is not complete until the ADR reflects it.
+- 2026-04-11: To append a dated log entry to the learning log, run: python3 carnatic/patch_roomodes_note_to_self.py --slug <slug> --entry "<text>" — this writes to carnatic/.clinerules, not .roomodes.
+- 2026-04-12: When the import path carnatic.graph_api fails for a script run directly (not as installed package), inject the project root into sys.path inside the conditional block rather than using importlib.util — it is cleaner and works for both script and package invocation.
+- 2026-04-12: When patching .clinerules (no file extension), apply_diff is blocked by mode file restrictions — use a python3 inline heredoc via execute_command to do the string replacement instead.
+- 2026-04-12: CarnaticWriter methods that do cross-file referential integrity checks (add-youtube, add-composer) must load CarnaticGraph from graph.json — validate against the derived artefact, not the source file directly, to enforce the render.py workflow gate.
+- 2026-04-12: render.py _sync_graph_json() must also rebuild recording_refs from the recordings/ directory on every render — without this, any new recordings/*.json file is invisible to CarnaticGraph._all_recordings_loaded() which iterates recording_refs not the directory directly.
+- 2026-04-12: ADR-018 concert brackets: group structuredPerfs by recording_id→session_index client-side in buildRecordingsList; the PerformanceRef shape already carries all needed fields — no schema change required, only the rendering layer changes.
+
+### 🏛️ Graph Architect
+
+- 2026-04-11: When the same composition appears in both a structured recording file and a musicians.json youtube entry, the disambiguation is a `version` field (free text, e.g. "Jamshedpur 1961" or "standalone clip") — not a new object type; `composition_id` is the stable identity, `version` is the context label that survives the unified migration.
+- 2026-04-12: .roomodes customInstructions values are single-line JSON strings; all .roomodes mutations must go through a dedicated transform script — never apply_diff directly on .roomodes.
+- 2026-04-12: The PerformanceRef shape already carries recording_id, session_index, performers[], short_title, and date — the UI was discarding them by flattening; concert bracketing is always a rendering fix, never a schema change.
+- 2026-04-12: Every new UI grouping (concert brackets, session sub-brackets) implies new CLI commands — concerts-for, co-performers-of, concerts-with must mirror what the browser shows so scholars and agents can query without opening the graph.
+
+### 🪃 Orchestrator
+

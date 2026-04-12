@@ -1,177 +1,104 @@
 #!/usr/bin/env python3
 """
-patch_roomodes_note_to_self.py
+patch_roomodes_note_to_self.py — append a dated learning log entry to an
+agent's subsection in carnatic/.clinerules.
 
-Two modes of operation:
+The learning logs have moved from .roomodes to carnatic/.clinerules so that
+agent character (.roomodes) and agent memory (.clinerules) are cleanly
+separated.
 
-1. Bootstrap mode (default):
-   Adds a "note to self" capability to every agent in .roomodes.
-   Each agent gains edit permission for `.roomodes` and a
-   `## Note to self — learning log` section in customInstructions.
+Usage:
+    python3 carnatic/patch_roomodes_note_to_self.py \\
+        --slug <agent-slug> \\
+        --entry "YYYY-MM-DD: <one plain-prose sentence>" \\
+        [--dry-run]
 
-   Usage:
-       python3 carnatic/patch_roomodes_note_to_self.py [--dry-run]
+Agent slugs:
+    librarian        → ### 📚 Librarian
+    carnatic-coder   → ### 🎵 Carnatic Coder
+    graph-architect  → ### 🏛️ Graph Architect
+    orchestrator     → ### 🪃 Orchestrator
 
-2. Append mode (--slug + --entry):
-   Appends a single dated log entry to one agent's learning log.
-
-   Usage:
-       python3 carnatic/patch_roomodes_note_to_self.py \\
-           --slug carnatic-coder \\
-           --entry "2026-04-11: <one sentence>" \\
-           [--dry-run]
-
-With --dry-run: prints the transformed JSON to stdout, does not write.
-Without --dry-run: writes back to .roomodes in place.
+With --dry-run: prints the transformed file to stdout, does not write.
+Without --dry-run: writes back to carnatic/.clinerules in place.
 """
 
-import json
 import sys
-import copy
 from pathlib import Path
 
-ROOMODES_PATH = Path(".roomodes")
+CLINERULES_PATH = Path("carnatic/.clinerules")
 
-NOTE_TO_SELF_TEMPLATE = """\
+# Maps agent slug → the exact subsection header in .clinerules
+SLUG_TO_HEADER = {
+    "librarian":       "### 📚 Librarian",
+    "carnatic-coder":  "### 🎵 Carnatic Coder",
+    "graph-architect": "### 🏛️ Graph Architect",
+    "orchestrator":    "### 🪃 Orchestrator",
+}
 
----
-
-## Note to self — learning log
-
-You have the ability to edit your own section in `.roomodes` as you work.
-Use this to record patterns, hard-won lessons, and standing rules that
-emerge from real sessions — things you wish you had known at the start.
-
-**Constraint:** You may ONLY edit the section whose `"slug"` is `"{slug}"`.
-Never touch another agent's `roleDefinition`, `customInstructions`, or `groups`.
-Use `apply_diff` surgically — never rewrite the whole file.
-
-When you record a note:
-- Append it under `## Note to self — learning log` in your own `customInstructions`.
-- Format: `- YYYY-MM-DD: <one plain-prose sentence describing the pattern>`.
-- Keep entries terse. This is a log, not an essay.
-"""
+# The section that contains all agent logs
+SECTION_HEADER = "## Agent learning logs"
 
 
-def add_roomodes_edit_permission(groups: list) -> list:
+def append_log_entry(text: str, slug: str, entry: str) -> tuple[str, list[str]]:
     """
-    Ensure the agent's groups list includes edit permission for .roomodes.
-
-    Rules:
-    - If the agent already has an unconstrained "edit" entry, .roomodes is
-      already writable — add nothing to groups (instruction alone suffices).
-    - If the agent has a constrained ["edit", {...fileRegex...}] entry,
-      extend the regex to also match .roomodes.
-    - If the agent has no edit entry at all, add a constrained one for
-      .roomodes only.
+    Append a dated entry under the agent's subsection in .clinerules.
+    Returns (modified_text, changelog).
     """
-    groups = copy.deepcopy(groups)
-
-    for i, g in enumerate(groups):
-        # Unconstrained edit — already covers .roomodes
-        if g == "edit":
-            return groups
-
-        # Constrained edit entry
-        if isinstance(g, list) and len(g) == 2 and g[0] == "edit":
-            opts = g[1]
-            existing_regex = opts.get("fileRegex", "")
-            existing_desc = opts.get("description", "")
-
-            # Already covers .roomodes
-            if r"\.roomodes" in existing_regex or ".roomodes" in existing_regex:
-                return groups
-
-            # Extend the regex: wrap existing in a group and OR with \.roomodes
-            new_regex = f"({existing_regex}|\\.roomodes)"
-            new_desc = existing_desc + ", .roomodes (own section only)"
-            groups[i] = ["edit", {"fileRegex": new_regex, "description": new_desc}]
-            return groups
-
-    # No edit entry at all — add one for .roomodes only
-    groups.append(["edit", {
-        "fileRegex": "\\.roomodes",
-        "description": ".roomodes (own section only)"
-    }])
-    return groups
-
-
-def add_note_to_self_instructions(custom_instructions: str, slug: str) -> str:
-    """
-    Append the Note-to-self block to customInstructions if not already present.
-    """
-    marker = "## Note to self — learning log"
-    if marker in custom_instructions:
-        return custom_instructions  # idempotent
-    return custom_instructions + NOTE_TO_SELF_TEMPLATE.format(slug=slug)
-
-
-def append_log_entry(data: dict, slug: str, entry: str) -> tuple[dict, list[str]]:
-    """
-    Append a single dated log entry to one agent's learning log section.
-    Returns (modified_dict, changelog).
-    """
-    data = copy.deepcopy(data)
     changelog = []
-    marker = "## Note to self — learning log"
-    found = False
 
-    for mode in data.get("customModes", []):
-        if mode.get("slug") != slug:
-            continue
-        found = True
-        instructions = mode.get("customInstructions", "")
-        if marker not in instructions:
-            changelog.append(f"  [{slug}] ERROR: learning log marker not found — run bootstrap first")
+    header = SLUG_TO_HEADER.get(slug)
+    if header is None:
+        changelog.append(f"ERROR: unknown slug '{slug}'. Valid slugs: {list(SLUG_TO_HEADER)}")
+        return text, changelog
+
+    if SECTION_HEADER not in text:
+        changelog.append(f"ERROR: '{SECTION_HEADER}' section not found in {CLINERULES_PATH}")
+        return text, changelog
+
+    if header not in text:
+        changelog.append(f"ERROR: subsection '{header}' not found in {CLINERULES_PATH}")
+        return text, changelog
+
+    # Find the subsection header and insert the entry after the last existing entry
+    # (or directly after the header if no entries yet)
+    lines = text.splitlines(keepends=True)
+    header_idx = None
+    for i, line in enumerate(lines):
+        if line.rstrip() == header:
+            header_idx = i
             break
-        line = f"- {entry}"
-        mode["customInstructions"] = instructions.rstrip() + "\n" + line + "\n"
-        changelog.append(f"  [{slug}] appended entry: {line}")
-        break
 
-    if not found:
-        changelog.append(f"  ERROR: slug '{slug}' not found in .roomodes")
+    if header_idx is None:
+        changelog.append(f"ERROR: could not locate '{header}' line")
+        return text, changelog
 
-    return data, changelog
+    # Find the insertion point: last '- 20' entry line within this subsection,
+    # or the blank line immediately after the header if no entries yet.
+    # Stop at the next '###' header or end of file.
+    insert_after = header_idx  # default: right after the header
+    for i in range(header_idx + 1, len(lines)):
+        stripped = lines[i].rstrip()
+        if stripped.startswith("### ") and i != header_idx:
+            break  # next subsection — stop
+        if stripped.startswith("- 20"):
+            insert_after = i  # keep advancing to the last entry
 
+    # Build the new entry line
+    entry_line = f"- {entry}\n" if not entry.startswith("- ") else f"{entry}\n"
 
-def transform(data: dict) -> tuple[dict, list[str]]:
-    """
-    Pure transformation: takes parsed .roomodes dict, returns (modified_dict, changelog).
-    """
-    data = copy.deepcopy(data)
-    changelog = []
+    lines.insert(insert_after + 1, entry_line)
+    changelog.append(f"[{slug}] appended: {entry_line.rstrip()}")
 
-    for mode in data.get("customModes", []):
-        slug = mode.get("slug", "unknown")
-
-        # 1. Edit permissions
-        original_groups = mode.get("groups", [])
-        new_groups = add_roomodes_edit_permission(original_groups)
-        if new_groups != original_groups:
-            mode["groups"] = new_groups
-            changelog.append(f"  [{slug}] groups: added .roomodes edit permission")
-        else:
-            changelog.append(f"  [{slug}] groups: .roomodes already writable (no change)")
-
-        # 2. customInstructions
-        original_instructions = mode.get("customInstructions", "")
-        new_instructions = add_note_to_self_instructions(original_instructions, slug)
-        if new_instructions != original_instructions:
-            mode["customInstructions"] = new_instructions
-            changelog.append(f"  [{slug}] customInstructions: appended 'Note to self' block")
-        else:
-            changelog.append(f"  [{slug}] customInstructions: 'Note to self' already present (no change)")
-
-    return data, changelog
+    return "".join(lines), changelog
 
 
 def parse_args():
     """Minimal arg parser — avoids argparse dependency."""
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
-    slug    = None
-    entry   = None
+    slug = None
+    entry = None
     i = 0
     while i < len(args):
         if args[i] == "--slug" and i + 1 < len(args):
@@ -186,23 +113,15 @@ def parse_args():
 def main():
     dry_run, slug, entry = parse_args()
 
-    raw  = ROOMODES_PATH.read_text(encoding="utf-8")
-    data = json.loads(raw)
+    if not slug or not entry:
+        print(__doc__)
+        sys.exit(1)
 
-    if slug and entry:
-        # Append mode
-        transformed, changelog = append_log_entry(data, slug, entry)
-        label = "APPEND"
-    else:
-        # Bootstrap mode
-        transformed, changelog = transform(data)
-        label = "BOOTSTRAP"
-
-    output = json.dumps(transformed, indent=2, ensure_ascii=False)
+    text = CLINERULES_PATH.read_text(encoding="utf-8")
+    transformed, changelog = append_log_entry(text, slug, entry)
 
     print("## patch_roomodes_note_to_self.py")
-    print(f"   source: {ROOMODES_PATH}")
-    print(f"   label:  {label}")
+    print(f"   target: {CLINERULES_PATH}")
     print(f"   mode:   {'DRY RUN — no file written' if dry_run else 'LIVE — writing to disk'}")
     print()
     print("Changes:")
@@ -211,11 +130,11 @@ def main():
     print()
 
     if dry_run:
-        print("--- transformed .roomodes (stdout) ---")
-        print(output)
+        print(f"--- transformed {CLINERULES_PATH} (stdout) ---")
+        print(transformed)
     else:
-        ROOMODES_PATH.write_text(output, encoding="utf-8")
-        print(f"Written: {ROOMODES_PATH} ({len(output)} bytes)")
+        CLINERULES_PATH.write_text(transformed, encoding="utf-8")
+        print(f"Written: {CLINERULES_PATH} ({len(transformed)} bytes)")
 
 
 if __name__ == "__main__":

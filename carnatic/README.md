@@ -50,7 +50,7 @@ carnatic/
     musicians.json        <- canonical source of truth: nodes and edges
     compositions.json     <- ragas, composers, compositions
     recordings/           <- one JSON file per structured concert recording
-      READYOU.md          <- schema and workflow for recording files
+      READYOU.md          <- schema reference for recording files (agents: read this)
       {id}.json           <- bare recording object; filename = id field
     cache/
       <md5>.html          <- raw Wikipedia page cache, keyed by URL hash

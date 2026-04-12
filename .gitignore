@@ -43,3 +43,7 @@ carnatic/data/cache/
 # (comment out the line below if you prefer not to commit it)
 # carnatic/graph.html
 carnatic/data/recordings.json.bak
+
+# playlist_meta.py output — generated, not tracked
+playlist_metadata.json
+playlist_metadata.txt

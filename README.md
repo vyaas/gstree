@@ -102,58 +102,6 @@ The AI does the Wikipedia parsing because it requires judgment, not keyword matc
 
 ---
 
-## No-code workflow — drag-drop with any LLM
-
-Don't want to touch the terminal? You can maintain the data file using any
-chat-based LLM (Claude, ChatGPT, Gemini, …) with file-upload support.
-
-Two files travel together as a self-contained unit:
-
-```
-carnatic/data/musicians.json   ← the data
-carnatic/data/READYOU.md       ← instructions for the LLM
-```
-
-**Session A — add YouTube recordings**
-
-1. Drag-drop both files into a new chat.
-2. Paste one or more YouTube links with their video titles:
-   ```
-   https://youtu.be/lNSJJMWLtfc
-   RTP | Natabhairavi | Adi | Abhishek Raghuram
-   ```
-3. The LLM matches each artist to an existing node, appends the recording,
-   and returns the complete updated `musicians.json`.
-4. Save the returned JSON over the old file.
-
-**Session B — parse Wikipedia links**
-
-1. Drag-drop both files into a new chat.
-2. Paste one or more Wikipedia URLs:
-   ```
-   https://en.wikipedia.org/wiki/Lalgudi_Jayaraman
-   ```
-3. The LLM fetches the page, assesses significance, proposes nodes and edges
-   with confidence scores, and returns the complete updated `musicians.json`.
-4. Review the change log at the top of the response, then save the JSON.
-
-**Session C — verbal corrections**
-
-1. Drag-drop both files into a new chat.
-2. Give a plain-English instruction:
-   ```
-   Remove the Semmangudi → Ramnad Krishnan edge.
-   Add a note to the Brinda → Semmangudi edge: padams specifically.
-   ```
-3. The LLM applies the change and returns the complete updated `musicians.json`.
-
-`READYOU.md` contains the full schema reference, workflow rules, and hard
-constraints the LLM must follow. It is addressed directly to the LLM, not to
-the human reader. See [`READYOU_SPEC.md`](READYOU_SPEC.md) if you want to
-adapt this pattern for a different dataset.
-
----
-
 ## Extending to other traditions
 
 The pattern generalises to any tradition with a teacher-student lineage:
@@ -172,20 +120,23 @@ The Carnatic data is the seed instance. Pull requests adding new traditions are 
 ```
 gstree/
   README.md             ← this file
-  READYOU_SPEC.md       ← meta-spec: how to write a READYOU.md for any dataset
   CONTRIBUTING.md       ← how to contribute
   LICENSE               ← MIT
   pyproject.toml        ← pip install gstree
   carnatic/
     README.md           ← detailed AI agent briefing for the Carnatic instance
     .clinerules         ← Roo/Cline session rules
+    cli.py              ← read-only CLI (stats, lookups, validation)
+    write_cli.py        ← atomic write CLI (add-musician, add-edge, add-youtube, …)
     crawl.py            ← Wikipedia scraper
     render.py           ← graph.html generator
     serve.py            ← local HTTP server
     graph.html          ← derived artefact (regenerate, never hand-edit)
     data/
-      musicians.json    ← canonical data: nodes, edges, recordings
-      READYOU.md        ← LLM instructions paired with musicians.json (no-code workflow)
+      musicians.json    ← canonical data: nodes, edges, youtube entries
+      compositions.json ← ragas, composers, compositions
+      READYOU.md        ← data schema and CLI method reference for agents
+      recordings/       ← one JSON file per structured concert recording
       cache/            ← Wikipedia page cache (gitignored)
 ```
 
