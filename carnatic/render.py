@@ -761,10 +761,44 @@ def render_html(
   }}
   #bani-flow-panel select:focus {{ outline: none; border-color: var(--teal); }}
   #listening-trail {{ display: none; margin-top: 8px; }}
-  #trail-composer-label {{
-    font-size: 0.72rem; color: var(--teal); font-style: italic;
-    margin-bottom: 6px; padding-bottom: 5px;
-    border-bottom: 1px solid var(--bg2); line-height: 1.5;
+  /* ── bani subject header (ADR-020) ── */
+  #bani-subject-header {{
+    padding: 8px 0 6px;
+    border-bottom: 1px solid var(--bg2);
+    flex-shrink: 0;
+  }}
+  #bani-subject-name-row {{
+    display: flex; align-items: center; gap: 5px;
+  }}
+  #bani-subject-name {{
+    font-size: 0.85rem; color: var(--yellow); font-weight: bold;
+    flex: 1; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }}
+  .bani-subject-link {{
+    margin-left: auto; flex-shrink: 0;
+    color: var(--blue); font-size: 0.72rem; text-decoration: none;
+  }}
+  .bani-subject-link:hover {{ text-decoration: underline; }}
+  .bani-subject-icon {{
+    width: 10px; height: 10px; display: inline-block;
+    flex-shrink: 0;
+    background: var(--teal);
+    border-radius: 50%;
+  }}
+  #bani-subject-sub {{
+    font-size: 0.70rem; color: var(--fg3);
+    margin-top: 3px; line-height: 1.5;
+    display: flex; flex-wrap: wrap; gap: 2px 0;
+  }}
+  .bani-sub-link {{
+    color: var(--blue); text-decoration: none; cursor: pointer;
+  }}
+  .bani-sub-link:hover {{ text-decoration: underline; }}
+  #bani-subject-aliases {{
+    font-size: 0.68rem; color: var(--gray);
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }}
   #trail-list {{ list-style: none; }}
   #trail-list li {{
@@ -905,10 +939,20 @@ def render_html(
           searching all compositions
         </div>
       </div>
+      <!-- Subject header — shown when a raga/composition is selected (ADR-020) -->
+      <div id="bani-subject-header" style="display:none">
+        <div id="bani-subject-name-row">
+          <span id="bani-subject-icon" class="bani-subject-icon"></span>
+          <span id="bani-subject-name"></span>
+          <a id="bani-subject-link" class="bani-subject-link" href="#"
+             target="_blank" style="display:none">&#8599;</a>
+        </div>
+        <div id="bani-subject-sub"></div>
+      </div>
+      <!-- Filter — BELOW the header, ABOVE the trail list (ADR-020) -->
       <input id="trail-filter" type="text" placeholder="Filter trail&#8230;"
              style="display:none" autocomplete="off" spellcheck="false" />
       <div id="listening-trail">
-        <div id="trail-composer-label"></div>
         <ul id="trail-list"></ul>
       </div>
     </div>
@@ -2092,28 +2136,112 @@ function applyBaniFilter(type, id) {{
 
 function buildListeningTrail(type, id, matchedNodeIds) {{
   const trail = document.getElementById('listening-trail');
-  const composerLabel = document.getElementById('trail-composer-label');
   const trailList = document.getElementById('trail-list');
   trailList.innerHTML = '';
-  composerLabel.textContent = '';
 
-  // Composer label (for composition filter only)
+  // ── Subject header (ADR-020) ──────────────────────────────────────────────
+  const subjectHeader = document.getElementById('bani-subject-header');
+  const subjectName   = document.getElementById('bani-subject-name');
+  const subjectLink   = document.getElementById('bani-subject-link');
+  const subjectSub    = document.getElementById('bani-subject-sub');
+
+  subjectSub.innerHTML = '';
+  subjectLink.style.display = 'none';
+  subjectLink.href = '#';
+
   if (type === 'comp') {{
-    const comp = compositions.find(c => c.id === id);
-    if (comp) {{
-      const raga = ragas.find(r => r.id === comp.raga_id);
-      const composer = composers.find(c => c.id === comp.composer_id);
-      const parts = [
-        composer ? 'Composed by ' + composer.name : null,
-        raga ? raga.name : null,
-        comp.tala ? comp.tala.charAt(0).toUpperCase() + comp.tala.slice(1) : null,
-      ].filter(Boolean);
-      composerLabel.textContent = parts.join(' \u00b7 ');
+    const comp     = compositions.find(c => c.id === id);
+    const raga     = comp ? ragas.find(r => r.id === comp.raga_id) : null;
+    const composer = comp ? composers.find(c => c.id === comp.composer_id) : null;
+
+    // Row 1: composition title + source link
+    subjectName.textContent = comp ? comp.title : id;
+    const compSrc = comp && comp.sources && comp.sources[0];
+    if (compSrc) {{
+      subjectLink.href = compSrc.url;
+      subjectLink.style.display = 'inline';
     }}
+
+    // Row 2: raga (linked) · tala · composer (linked to graph node if available)
+    const parts = [];
+
+    if (raga) {{
+      const ragaSpan = document.createElement('span');
+      const ragaSrc  = raga.sources && raga.sources[0];
+      if (ragaSrc) {{
+        const a = document.createElement('a');
+        a.className = 'bani-sub-link';
+        a.href = ragaSrc.url;
+        a.target = '_blank';
+        a.textContent = raga.name;
+        ragaSpan.appendChild(a);
+      }} else {{
+        ragaSpan.textContent = raga.name;
+      }}
+      parts.push(ragaSpan);
+    }}
+
+    if (comp && comp.tala) {{
+      const talaSpan = document.createElement('span');
+      talaSpan.textContent = comp.tala.charAt(0).toUpperCase() + comp.tala.slice(1);
+      parts.push(talaSpan);
+    }}
+
+    if (composer) {{
+      const composerSpan = document.createElement('span');
+      if (composer.musician_node_id) {{
+        const a = document.createElement('a');
+        a.className = 'bani-sub-link';
+        a.href = '#';
+        a.textContent = composer.name;
+        a.addEventListener('click', e => {{
+          e.preventDefault();
+          const n = cy.getElementById(composer.musician_node_id);
+          if (n && n.length) {{
+            cy.elements().removeClass('faded highlighted bani-match');
+            selectNode(n);
+          }}
+        }});
+        composerSpan.appendChild(a);
+      }} else {{
+        composerSpan.textContent = composer.name;
+      }}
+      parts.push(composerSpan);
+    }}
+
+    // Join with ' · ' separators
+    parts.forEach((part, i) => {{
+      subjectSub.appendChild(part);
+      if (i < parts.length - 1) {{
+        const sep = document.createElement('span');
+        sep.textContent = ' \u00b7 ';
+        sep.style.color = 'var(--gray)';
+        subjectSub.appendChild(sep);
+      }}
+    }});
+
   }} else {{
+    // Raga search
     const raga = ragas.find(r => r.id === id);
-    if (raga) composerLabel.textContent = 'Raga: ' + raga.name;
+
+    // Row 1: raga name + Wikipedia link
+    subjectName.textContent = raga ? raga.name : id;
+    const ragaSrc = raga && raga.sources && raga.sources[0];
+    if (ragaSrc) {{
+      subjectLink.href = ragaSrc.url;
+      subjectLink.style.display = 'inline';
+    }}
+
+    // Row 2: aliases (if any)
+    if (raga && raga.aliases && raga.aliases.length > 0) {{
+      const aliasSpan = document.createElement('span');
+      aliasSpan.id = 'bani-subject-aliases';
+      aliasSpan.textContent = 'also: ' + raga.aliases.join(', ');
+      subjectSub.appendChild(aliasSpan);
+    }}
   }}
+
+  subjectHeader.style.display = 'block';
 
   // ── 1. Collect raw rows ────────────────────────────────────────────────────
 
@@ -2362,6 +2490,7 @@ function clearBaniFilter() {{
   document.getElementById('trail-filter').style.display = 'none';
   document.getElementById('trail-filter').value = '';
   document.getElementById('listening-trail').style.display = 'none';
+  document.getElementById('bani-subject-header').style.display = 'none';
   applyZoomLabels();
   // Mutual exclusion: clear chip filters when Bani Flow filter clears
   clearAllChipFilters();
