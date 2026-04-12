@@ -1,0 +1,530 @@
+#!/usr/bin/env python3
+"""
+graph_api.py — Phase 2 of ADR-013.
+
+Immutable in-memory representation of the Carnatic knowledge graph.
+Loaded once from graph.json + recordings/*.json.
+All methods are pure (no side effects, no I/O after __init__).
+
+Usage (as a library):
+    from carnatic.graph_api import CarnaticGraph
+    from pathlib import Path
+
+    g = CarnaticGraph(Path("carnatic/data/graph.json"))
+    print(g.get_gurus_of("madurai_mani_iyer"))
+
+Usage (as a CLI query tool):
+    python3 carnatic/graph_api.py --musician madurai_mani_iyer
+    python3 carnatic/graph_api.py --recordings-for lalgudi_jayaraman
+    python3 carnatic/graph_api.py --concert jamshedpur_1961_madurai_mani_iyer
+    python3 carnatic/graph_api.py --bani-flow maakelara_vicaaramu
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+
+# ── CarnaticGraph ──────────────────────────────────────────────────────────────
+
+class CarnaticGraph:
+    """
+    Immutable in-memory representation of the Carnatic knowledge graph.
+
+    Loaded once from graph.json + recordings/*.json.
+    All methods after __init__ are pure lookups — no file I/O, no mutation.
+
+    Recording files are loaded lazily on first access and cached.
+    """
+
+    def __init__(self, graph_json_path: Path) -> None:
+        raw = json.loads(graph_json_path.read_text(encoding="utf-8"))
+
+        # ── musician graph ─────────────────────────────────────────────────────
+        m = raw.get("musicians", {})
+        self._musician_nodes: list[dict] = m.get("nodes", [])
+        self._musician_edges: list[dict] = m.get("edges", [])
+
+        # ── composition data ───────────────────────────────────────────────────
+        c = raw.get("compositions", {})
+        self._ragas:        list[dict] = c.get("ragas", [])
+        self._composers:    list[dict] = c.get("composers", [])
+        self._compositions: list[dict] = c.get("compositions", [])
+
+        # ── recording refs (index) ─────────────────────────────────────────────
+        self._recording_refs: list[dict] = raw.get("recording_refs", [])
+
+        # ── base path for resolving recording file paths ───────────────────────
+        self._data_dir: Path = graph_json_path.parent
+
+        # ── lazy cache: recording_id → full recording dict ────────────────────
+        self._recording_cache: dict[str, dict] = {}
+
+        # ── pre-build fast-lookup indices ──────────────────────────────────────
+        self._musician_by_id:    dict[str, dict] = {n["id"]: n for n in self._musician_nodes}
+        self._raga_by_id:        dict[str, dict] = {r["id"]: r for r in self._ragas}
+        self._composer_by_id:    dict[str, dict] = {c["id"]: c for c in self._composers}
+        self._composition_by_id: dict[str, dict] = {c["id"]: c for c in self._compositions}
+        self._recording_ref_by_id: dict[str, dict] = {r["id"]: r for r in self._recording_refs}
+
+        # guru→[shishya_ids], shishya→[guru_ids]
+        self._shishyas_of: dict[str, list[str]] = defaultdict(list)
+        self._gurus_of:    dict[str, list[str]] = defaultdict(list)
+        for edge in self._musician_edges:
+            src, tgt = edge["source"], edge["target"]
+            self._shishyas_of[src].append(tgt)
+            self._gurus_of[tgt].append(src)
+
+    # ── internal: lazy recording loader ───────────────────────────────────────
+
+    def _load_recording(self, recording_id: str) -> dict | None:
+        if recording_id in self._recording_cache:
+            return self._recording_cache[recording_id]
+        ref = self._recording_ref_by_id.get(recording_id)
+        if ref is None:
+            return None
+        path = self._data_dir / ref["path"]
+        if not path.exists():
+            return None
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        self._recording_cache[recording_id] = rec
+        return rec
+
+    def _all_recordings_loaded(self) -> list[dict]:
+        """Load and cache all recording files; return list of full recording dicts."""
+        result = []
+        for ref in self._recording_refs:
+            rec = self._load_recording(ref["id"])
+            if rec is not None:
+                result.append(rec)
+        return result
+
+    # ── Musician traversal ─────────────────────────────────────────────────────
+
+    def get_musician(self, musician_id: str) -> dict | None:
+        """Return the musician node dict for the given id, or None."""
+        return self._musician_by_id.get(musician_id)
+
+    def get_all_musicians(self) -> list[dict]:
+        """Return all musician nodes."""
+        return list(self._musician_nodes)
+
+    def get_gurus_of(self, musician_id: str) -> list[dict]:
+        """Return all musician nodes that are gurus of the given musician."""
+        return [
+            self._musician_by_id[mid]
+            for mid in self._gurus_of.get(musician_id, [])
+            if mid in self._musician_by_id
+        ]
+
+    def get_shishyas_of(self, musician_id: str) -> list[dict]:
+        """Return all musician nodes that are shishyas of the given musician."""
+        return [
+            self._musician_by_id[mid]
+            for mid in self._shishyas_of.get(musician_id, [])
+            if mid in self._musician_by_id
+        ]
+
+    def get_lineage_chain(self, musician_id: str, depth: int = 5) -> list[dict]:
+        """
+        Walk the guru chain upward from musician_id for up to `depth` hops.
+        Returns a list of musician dicts from the given musician up to the root,
+        in ascending order (musician first, oldest ancestor last).
+        Stops at the first node with no gurus or when depth is exhausted.
+        Cycles are broken by tracking visited ids.
+        """
+        chain: list[dict] = []
+        visited: set[str] = set()
+        current_id = musician_id
+        for _ in range(depth + 1):
+            if current_id in visited:
+                break
+            node = self._musician_by_id.get(current_id)
+            if node is None:
+                break
+            chain.append(node)
+            visited.add(current_id)
+            gurus = self._gurus_of.get(current_id, [])
+            if not gurus:
+                break
+            # Follow the first (highest-confidence) guru edge
+            current_id = gurus[0]
+        return chain
+
+    def get_musicians_by_era(self, era: str) -> list[dict]:
+        """Return all musician nodes with the given era value."""
+        return [n for n in self._musician_nodes if n.get("era") == era]
+
+    def get_musicians_by_instrument(self, instrument: str) -> list[dict]:
+        """Return all musician nodes with the given instrument value."""
+        return [n for n in self._musician_nodes if n.get("instrument") == instrument]
+
+    def get_musicians_by_bani(self, bani: str) -> list[dict]:
+        """Return all musician nodes with the given bani value."""
+        return [n for n in self._musician_nodes if n.get("bani") == bani]
+
+    def get_all_edges(self) -> list[dict]:
+        """Return all guru-shishya edges."""
+        return list(self._musician_edges)
+
+    # ── Recording traversal ────────────────────────────────────────────────────
+
+    def get_recording(self, recording_id: str) -> dict | None:
+        """Return the full recording dict for the given id, or None."""
+        return self._load_recording(recording_id)
+
+    def get_all_recordings(self) -> list[dict]:
+        """Return all full recording dicts (loads all recording files)."""
+        return self._all_recordings_loaded()
+
+    def get_all_recording_refs(self) -> list[dict]:
+        """Return the lightweight recording_refs index (no file I/O)."""
+        return list(self._recording_refs)
+
+    def get_recordings_for_musician(self, musician_id: str) -> list[dict]:
+        """
+        Return all full recording dicts in which the given musician appears
+        as a performer in any session.
+        """
+        result = []
+        for ref in self._recording_refs:
+            if musician_id in ref.get("primary_musician_ids", []):
+                rec = self._load_recording(ref["id"])
+                if rec is not None:
+                    result.append(rec)
+        return result
+
+    def get_performances_for_musician(self, musician_id: str) -> list[dict]:
+        """
+        Return a flat list of PerformanceRef dicts for every performance
+        in which the given musician appears as a performer.
+
+        Each PerformanceRef carries: recording_id, video_id, title,
+        short_title, date, session_index, performance_index, timestamp,
+        offset_seconds, display_title, composition_id, raga_id, tala,
+        composer_id, notes, type, performers.
+        """
+        result = []
+        for rec in self.get_recordings_for_musician(musician_id):
+            for session in rec.get("sessions", []):
+                performers = session.get("performers", [])
+                # Only include sessions where this musician actually performs
+                if not any(p.get("musician_id") == musician_id for p in performers):
+                    continue
+                for perf in session.get("performances", []):
+                    result.append(self._make_perf_ref(rec, session, perf, performers))
+        return result
+
+    def get_recordings_for_composition(self, composition_id: str) -> list[dict]:
+        """Return all full recording dicts that contain a performance of the given composition."""
+        result = []
+        for rec in self._all_recordings_loaded():
+            for session in rec.get("sessions", []):
+                for perf in session.get("performances", []):
+                    if perf.get("composition_id") == composition_id:
+                        result.append(rec)
+                        break
+                else:
+                    continue
+                break
+        return result
+
+    def get_recordings_for_raga(self, raga_id: str) -> list[dict]:
+        """Return all full recording dicts that contain a performance in the given raga."""
+        result = []
+        for rec in self._all_recordings_loaded():
+            for session in rec.get("sessions", []):
+                for perf in session.get("performances", []):
+                    if perf.get("raga_id") == raga_id:
+                        result.append(rec)
+                        break
+                else:
+                    continue
+                break
+        return result
+
+    # ── Composition traversal ──────────────────────────────────────────────────
+
+    def get_composition(self, composition_id: str) -> dict | None:
+        """Return the composition dict for the given id, or None."""
+        return self._composition_by_id.get(composition_id)
+
+    def get_all_compositions(self) -> list[dict]:
+        """Return all composition dicts."""
+        return list(self._compositions)
+
+    def get_raga(self, raga_id: str) -> dict | None:
+        """Return the raga dict for the given id, or None."""
+        return self._raga_by_id.get(raga_id)
+
+    def get_all_ragas(self) -> list[dict]:
+        """Return all raga dicts."""
+        return list(self._ragas)
+
+    def get_composer(self, composer_id: str) -> dict | None:
+        """Return the composer dict for the given id, or None."""
+        return self._composer_by_id.get(composer_id)
+
+    def get_all_composers(self) -> list[dict]:
+        """Return all composer dicts."""
+        return list(self._composers)
+
+    def get_compositions_by_raga(self, raga_id: str) -> list[dict]:
+        """Return all compositions in the given raga."""
+        return [c for c in self._compositions if c.get("raga_id") == raga_id]
+
+    def get_compositions_by_composer(self, composer_id: str) -> list[dict]:
+        """Return all compositions by the given composer."""
+        return [c for c in self._compositions if c.get("composer_id") == composer_id]
+
+    def get_musicians_who_performed(self, composition_id: str) -> list[dict]:
+        """
+        Return all musician nodes who appear as performers in any recording
+        that contains a performance of the given composition.
+        """
+        musician_ids: set[str] = set()
+        for rec in self._all_recordings_loaded():
+            for session in rec.get("sessions", []):
+                for perf in session.get("performances", []):
+                    if perf.get("composition_id") == composition_id:
+                        for pf in session.get("performers", []):
+                            mid = pf.get("musician_id")
+                            if mid:
+                                musician_ids.add(mid)
+        # Also check legacy youtube[] entries on musician nodes
+        for node in self._musician_nodes:
+            for yt in node.get("youtube", []):
+                if yt.get("composition_id") == composition_id:
+                    musician_ids.add(node["id"])
+        return [
+            self._musician_by_id[mid]
+            for mid in musician_ids
+            if mid in self._musician_by_id
+        ]
+
+    def get_musicians_who_performed_raga(self, raga_id: str) -> list[dict]:
+        """
+        Return all musician nodes who appear as performers in any recording
+        that contains a performance in the given raga.
+        Also includes musicians with youtube[] entries tagged with this raga.
+        """
+        musician_ids: set[str] = set()
+        for rec in self._all_recordings_loaded():
+            for session in rec.get("sessions", []):
+                for perf in session.get("performances", []):
+                    if perf.get("raga_id") == raga_id:
+                        for pf in session.get("performers", []):
+                            mid = pf.get("musician_id")
+                            if mid:
+                                musician_ids.add(mid)
+        # Also check legacy youtube[] entries
+        for node in self._musician_nodes:
+            for yt in node.get("youtube", []):
+                if yt.get("raga_id") == raga_id:
+                    musician_ids.add(node["id"])
+        return [
+            self._musician_by_id[mid]
+            for mid in musician_ids
+            if mid in self._musician_by_id
+        ]
+
+    # ── Cross-domain traversal ─────────────────────────────────────────────────
+
+    def get_bani_flow(self, composition_id: str) -> list[dict]:
+        """
+        Return a chronologically sorted list of PerformanceRef dicts for the
+        given composition, across all recordings and all musicians.
+
+        This is the data that powers the Bani Flow listening trail.
+        Entries without a date sort last.
+        """
+        refs: list[dict] = []
+
+        # Structured recordings
+        for rec in self._all_recordings_loaded():
+            for session in rec.get("sessions", []):
+                performers = session.get("performers", [])
+                for perf in session.get("performances", []):
+                    if perf.get("composition_id") == composition_id:
+                        refs.append(self._make_perf_ref(rec, session, perf, performers))
+
+        # Legacy youtube[] entries
+        for node in self._musician_nodes:
+            for yt in node.get("youtube", []):
+                if yt.get("composition_id") == composition_id:
+                    refs.append({
+                        "recording_id":      None,
+                        "video_id":          self._yt_video_id(yt.get("url", "")),
+                        "title":             yt.get("label", ""),
+                        "short_title":       yt.get("label", ""),
+                        "date":              str(yt.get("year", "")),
+                        "session_index":     None,
+                        "performance_index": None,
+                        "timestamp":         None,
+                        "offset_seconds":    0,
+                        "display_title":     yt.get("label", ""),
+                        "composition_id":    composition_id,
+                        "raga_id":           yt.get("raga_id"),
+                        "tala":              None,
+                        "composer_id":       None,
+                        "notes":             None,
+                        "type":              "youtube_legacy",
+                        "performers":        [{"musician_id": node["id"], "role": node.get("instrument", "vocal")}],
+                        "version":           yt.get("version"),
+                    })
+
+        # Sort chronologically; entries without a date sort last
+        def sort_key(r: dict) -> str:
+            return r.get("date") or "9999"
+
+        return sorted(refs, key=sort_key)
+
+    def get_concert_programme(self, recording_id: str) -> dict | None:
+        """
+        Return a structured programme dict:
+          {
+            "recording": <recording metadata>,
+            "sessions": [
+              {
+                "session_index": int,
+                "performers": [...],
+                "performances": [
+                  {
+                    ...performance fields...,
+                    "composition": <resolved composition dict or None>,
+                    "raga":        <resolved raga dict or None>,
+                    "composer":    <resolved composer dict or None>,
+                  }
+                ]
+              }
+            ]
+          }
+        Returns None if the recording_id is not found.
+        """
+        rec = self._load_recording(recording_id)
+        if rec is None:
+            return None
+
+        sessions_out = []
+        for session in rec.get("sessions", []):
+            perfs_out = []
+            for perf in session.get("performances", []):
+                comp_id     = perf.get("composition_id")
+                raga_id     = perf.get("raga_id")
+                composer_id = perf.get("composer_id")
+                perfs_out.append({
+                    **perf,
+                    "composition": self._composition_by_id.get(comp_id) if comp_id else None,
+                    "raga":        self._raga_by_id.get(raga_id) if raga_id else None,
+                    "composer":    self._composer_by_id.get(composer_id) if composer_id else None,
+                })
+            sessions_out.append({
+                "session_index": session["session_index"],
+                "performers":    session.get("performers", []),
+                "performances":  perfs_out,
+            })
+
+        return {
+            "recording": {k: v for k, v in rec.items() if k != "sessions"},
+            "sessions":  sessions_out,
+        }
+
+    # ── internal helpers ───────────────────────────────────────────────────────
+
+    @staticmethod
+    def _make_perf_ref(rec: dict, session: dict, perf: dict, performers: list[dict]) -> dict:
+        return {
+            "recording_id":      rec["id"],
+            "video_id":          rec.get("video_id"),
+            "title":             rec.get("title", ""),
+            "short_title":       rec.get("short_title", ""),
+            "date":              rec.get("date", ""),
+            "session_index":     session["session_index"],
+            "performance_index": perf["performance_index"],
+            "timestamp":         perf.get("timestamp", ""),
+            "offset_seconds":    perf.get("offset_seconds", 0),
+            "display_title":     perf.get("display_title", ""),
+            "composition_id":    perf.get("composition_id"),
+            "raga_id":           perf.get("raga_id"),
+            "tala":              perf.get("tala"),
+            "composer_id":       perf.get("composer_id"),
+            "notes":             perf.get("notes"),
+            "type":              perf.get("type"),
+            "performers":        performers,
+            "version":           perf.get("version"),
+        }
+
+    @staticmethod
+    def _yt_video_id(url: str) -> str | None:
+        import re
+        m = re.search(r"(?:v=|youtu\.be/|embed/)([A-Za-z0-9_-]{11})", url)
+        return m.group(1) if m else None
+
+
+# ── CLI entry point ────────────────────────────────────────────────────────────
+
+def _default_graph_path() -> Path:
+    return Path(__file__).parent / "data" / "graph.json"
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Query the Carnatic knowledge graph via CarnaticGraph API."
+    )
+    parser.add_argument("--graph", default=str(_default_graph_path()),
+                        help="Path to graph.json (default: carnatic/data/graph.json)")
+    parser.add_argument("--musician",          metavar="ID", help="Print musician node")
+    parser.add_argument("--gurus-of",          metavar="ID", help="Print gurus of musician")
+    parser.add_argument("--shishyas-of",       metavar="ID", help="Print shishyas of musician")
+    parser.add_argument("--lineage",           metavar="ID", help="Print lineage chain upward")
+    parser.add_argument("--recordings-for",    metavar="ID", help="Print recordings for musician")
+    parser.add_argument("--concert",           metavar="ID", help="Print concert programme")
+    parser.add_argument("--bani-flow",         metavar="ID", help="Print bani flow for composition")
+    parser.add_argument("--composition",       metavar="ID", help="Print composition")
+    parser.add_argument("--raga",              metavar="ID", help="Print raga")
+    parser.add_argument("--stats",             action="store_true", help="Print graph statistics")
+    args = parser.parse_args()
+
+    g = CarnaticGraph(Path(args.graph))
+
+    def dump(obj: object) -> None:
+        print(json.dumps(obj, indent=2, ensure_ascii=False))
+
+    if args.stats:
+        print(f"Musicians:    {len(g.get_all_musicians())}")
+        print(f"Edges:        {len(g.get_all_edges())}")
+        print(f"Ragas:        {len(g.get_all_ragas())}")
+        print(f"Composers:    {len(g.get_all_composers())}")
+        print(f"Compositions: {len(g.get_all_compositions())}")
+        print(f"Recordings:   {len(g.get_all_recording_refs())}")
+    elif args.musician:
+        dump(g.get_musician(args.musician))
+    elif args.gurus_of:
+        dump(g.get_gurus_of(args.gurus_of))
+    elif args.shishyas_of:
+        dump(g.get_shishyas_of(args.shishyas_of))
+    elif args.lineage:
+        dump(g.get_lineage_chain(args.lineage))
+    elif args.recordings_for:
+        recs = g.get_recordings_for_musician(args.recordings_for)
+        dump([{"id": r["id"], "title": r["title"], "date": r.get("date")} for r in recs])
+    elif args.concert:
+        dump(g.get_concert_programme(args.concert))
+    elif args.bani_flow:
+        dump(g.get_bani_flow(args.bani_flow))
+    elif args.composition:
+        dump(g.get_composition(args.composition))
+    elif args.raga:
+        dump(g.get_raga(args.raga))
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

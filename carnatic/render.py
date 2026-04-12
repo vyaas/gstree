@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-render.py — Renders musicians.json as a self-contained Cytoscape.js HTML graph.
+render.py — Renders the Carnatic knowledge graph as a self-contained Cytoscape.js HTML page.
 Nodes clickable (sources). Edges directed guru→shishya.
 Color-coded by era. Shape-coded by instrument.
 Floating YouTube player: click a node's track list → embedded video, graph stays live.
 Bani Flow panel: filter by composition or raga, chronological listening trail.
+
+Data source (priority order):
+  1. carnatic/data/graph.json  (ADR-013 unified source of truth)
+  2. carnatic/data/musicians.json + compositions.json  (legacy fallback)
 """
 
 import json
@@ -12,9 +16,10 @@ from pathlib import Path
 from collections import defaultdict
 
 ROOT              = Path(__file__).parent
-DATA_FILE         = ROOT / "data" / "musicians.json"
-COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"
-RECORDINGS_FILE   = ROOT / "data" / "recordings.json"
+GRAPH_FILE        = ROOT / "data" / "graph.json"          # ADR-013 unified source
+DATA_FILE         = ROOT / "data" / "musicians.json"      # legacy fallback
+COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"   # legacy fallback
+RECORDINGS_FILE   = ROOT / "data" / "recordings.json"     # legacy monolithic fallback
 OUT_FILE          = ROOT / "graph.html"
 
 # ── visual mappings ────────────────────────────────────────────────────────────
@@ -2189,9 +2194,35 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {{
 # ── entry point ────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    graph            = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-    comp_data        = load_compositions()
-    recordings_data  = load_recordings()
+    # ── ADR-013: load from graph.json via CarnaticGraph; fall back to legacy files ──
+    if GRAPH_FILE.exists():
+        # Ensure project root is on sys.path so the import works whether
+        # render.py is run as a script or as part of the installed package.
+        import sys as _sys
+        _project_root = str(ROOT.parent)
+        if _project_root not in _sys.path:
+            _sys.path.insert(0, _project_root)
+        from carnatic.graph_api import CarnaticGraph  # noqa: E402
+        cg = CarnaticGraph(GRAPH_FILE)
+        graph = {
+            "nodes": cg.get_all_musicians(),
+            "edges": cg.get_all_edges(),
+        }
+        comp_data = {
+            "ragas":        cg.get_all_ragas(),
+            "composers":    cg.get_all_composers(),
+            "compositions": cg.get_all_compositions(),
+        }
+        recordings_data = {"recordings": cg.get_all_recordings()}
+        print(f"[LOAD] graph.json  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges, "
+              f"{len(recordings_data['recordings'])} recordings)")
+    else:
+        # Legacy fallback: read musicians.json + compositions.json directly
+        graph           = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+        comp_data       = load_compositions()
+        recordings_data = load_recordings()
+        print(f"[LOAD] musicians.json (legacy)  ({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
+
     composition_to_nodes, raga_to_nodes = build_composition_lookups(graph, comp_data, recordings_data)
     musician_to_performances, composition_to_performances, raga_to_performances = \
         build_recording_lookups(recordings_data, comp_data)
