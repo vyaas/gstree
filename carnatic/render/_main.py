@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-render.py — Orchestrator: renders graph.html from Carnatic knowledge graph data.
+_main.py — Orchestrator: renders graph.html from Carnatic knowledge graph data.
 
+Entry point for the `gstree-render` CLI command (pyproject.toml).
 Delegates to carnatic/render/ package modules:
   sync          → sync graph.json from source files
   data_loaders  → load JSON data
@@ -12,23 +13,18 @@ Delegates to carnatic/render/ package modules:
 import sys
 from pathlib import Path
 
-ROOT              = Path(__file__).parent
+ROOT              = Path(__file__).parent.parent  # carnatic/render/_main.py → carnatic/render/ → carnatic/
 GRAPH_FILE        = ROOT / "data" / "graph.json"
 DATA_FILE         = ROOT / "data" / "musicians.json"
 COMPOSITIONS_FILE = ROOT / "data" / "compositions.json"
 RECORDINGS_FILE   = ROOT / "data" / "recordings.json"
 OUT_FILE          = ROOT / "graph.html"
 
-# Ensure project root is on sys.path for package imports
-_project_root = str(ROOT.parent)
-if _project_root not in sys.path:
-    sys.path.insert(0, _project_root)
-
-from carnatic.render.sync import sync_graph_json
-from carnatic.render.data_loaders import load_compositions, load_recordings
-from carnatic.render.data_transforms import build_recording_lookups, build_composition_lookups
-from carnatic.render.graph_builder import build_elements
-from carnatic.render.html_generator import render_html
+from .sync import sync_graph_json
+from .data_loaders import load_compositions, load_recordings
+from .data_transforms import build_recording_lookups, build_composition_lookups
+from .graph_builder import build_elements
+from .html_generator import render_html
 
 
 def main() -> None:

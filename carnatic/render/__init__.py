@@ -6,6 +6,7 @@ from .data_transforms import build_recording_lookups, build_composition_lookups
 from .graph_builder import build_elements
 from .html_generator import render_html
 from .sync import sync_graph_json
+from ._main import main
 
 __all__ = [
     "load_compositions",
@@ -17,4 +18,5 @@ __all__ = [
     "build_elements",
     "render_html",
     "sync_graph_json",
+    "main",
 ]
