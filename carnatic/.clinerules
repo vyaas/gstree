@@ -349,6 +349,7 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-12: CarnaticWriter methods that do cross-file referential integrity checks (add-youtube, add-composer) must load CarnaticGraph from graph.json — validate against the derived artefact, not the source file directly, to enforce the render.py workflow gate.
 - 2026-04-12: render.py _sync_graph_json() must also rebuild recording_refs from the recordings/ directory on every render — without this, any new recordings/*.json file is invisible to CarnaticGraph._all_recordings_loaded() which iterates recording_refs not the directory directly.
 - 2026-04-12: ADR-018 concert brackets: group structuredPerfs by recording_id→session_index client-side in buildRecordingsList; the PerformanceRef shape already carries all needed fields — no schema change required, only the rendering layer changes.
+- 2026-04-12: ADR-022 janyas dropdown: use a filter input + renderJanyaList() closure pattern rather than a static flex-wrap — the closure captures the sorted janyas array and re-renders the list on every oninput event; toggling the panel resets the filter and re-focuses the input for immediate typing.
 
 ### 🏛️ Graph Architect
 

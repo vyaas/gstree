@@ -1,6 +1,6 @@
 # ADR-022: Raga Panel Navigability — Mela, Cakra, Janyas, and Notes Tooltip
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-12
 
 ---
