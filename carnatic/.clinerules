@@ -23,10 +23,45 @@ carnatic/
 **The Carnatic Coder must never directly edit or create any `.json` file.** If a JSON file needs changing, the Coder writes a script; the Librarian reviews and applies it.
 
 ## Session startup
-1. Read `data/musicians.json` before doing anything. That is the current state.
-2. Read `data/compositions.json` before doing anything composition/raga-related.
+1. Run `python3 carnatic/cli.py stats` to orient — replaces reading `musicians.json` and `compositions.json` in full.
+2. Use targeted CLI queries (see **CLI Tools** section below) before any `read_file` call.
 3. Read the **Open questions** section below — it is the living memory of this project.
 4. At the end of every session: update the Open questions section, then **hand off to the Git Fiend** (see Git Fiend protocol below).
+
+> **Full file reads** (`read_file: musicians.json`) are reserved for patching sessions where you need to construct an `apply_diff` block. Even then, use `python3 carnatic/cli.py get-musician <id>` to retrieve the exact current value of a field before constructing the diff — not the whole file.
+
+## CLI Tools (ADR-014)
+```bash
+# Orientation
+python3 carnatic/cli.py stats
+
+# Existence checks (exit 0 = found, exit 1 = not found)
+python3 carnatic/cli.py musician-exists   <id_or_label>
+python3 carnatic/cli.py raga-exists       <id_or_name>
+python3 carnatic/cli.py composition-exists <id_or_title>
+python3 carnatic/cli.py recording-exists  <id_or_title>
+python3 carnatic/cli.py url-exists        <youtube_url>
+
+# Lookup (compact summary; add --json for full object)
+python3 carnatic/cli.py get-musician      <id>
+python3 carnatic/cli.py get-raga          <id>
+python3 carnatic/cli.py get-composition   <id>
+python3 carnatic/cli.py gurus-of          <musician_id>
+python3 carnatic/cli.py shishyas-of       <musician_id>
+python3 carnatic/cli.py lineage           <musician_id>
+python3 carnatic/cli.py recordings-for    <musician_id>
+python3 carnatic/cli.py compositions-in-raga <raga_id>
+
+# Validation (run after any apply_diff patch)
+python3 carnatic/cli.py validate
+```
+
+### YouTube ingestion — mandatory pre-checks
+Before adding any YouTube link:
+1. `python3 carnatic/cli.py url-exists <url>` — if FOUND, report and stop.
+2. `python3 carnatic/cli.py musician-exists "<artist name>"` — note exact id if FOUND; flag if NOT FOUND.
+3. `python3 carnatic/cli.py raga-exists "<raga name>"` — note exact id if FOUND; add raga first if NOT FOUND.
+4. `python3 carnatic/cli.py composition-exists "<composition name>"` — note exact id if FOUND; add composition first if NOT FOUND.
 
 ## Core workflow
 1. User drops a Wikipedia URL, YouTube link+title, or verbal correction
