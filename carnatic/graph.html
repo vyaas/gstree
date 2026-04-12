@@ -39498,6 +39498,12 @@ function buildListeningTrail(type, id, matchedNodeIds) {
         year:           p.date ? parseInt(p.date) : null,
         offset_seconds: p.offset_seconds,
         composition_id: p.composition_id,
+        recording_id:   p.recording_id,
+        short_title:    p.short_title,
+        concert_title:  p.title,
+        timestamp:      p.timestamp || '00:00',
+        raga_id:        p.raga_id || null,
+        tala:           p.tala || null,
       },
       isStructured: true,
       perfKey: `${p.recording_id}::${p.session_index}::${p.performance_index}`,
@@ -39579,8 +39585,14 @@ function buildTrailItem(row, type, id) {
   const li = document.createElement('li');
   li.dataset.vid = row.track.vid;
   li.className   = playerRegistry.has(row.track.vid) ? 'playing' : '';
-  // li click is now a no-op; ▶ button handles play
-  li.title = '';
+  // Row click → cross-navigate to the composition or raga (ADR-025 Change 0)
+  li.addEventListener('click', () => {
+    if (row.isStructured && row.track.composition_id) {
+      triggerBaniSearch('comp', row.track.composition_id);
+    } else {
+      triggerBaniSearch(type, id);
+    }
+  });
 
   // ── Row 1: primary artist + lifespan; then one row per co-performer ─────────
   const headerDiv = document.createElement('div');
@@ -39642,8 +39654,36 @@ function buildTrailItem(row, type, id) {
   trailPlayBtn.textContent = '▶';
   trailPlayBtn.addEventListener('click', e => {
     e.stopPropagation();
-    openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel,
-                      row.isStructured ? row.track.offset_seconds : undefined);
+    if (row.isStructured && row.track.recording_id) {
+      // Assemble full concert track list from musicianToPerformances
+      const allPerfs = Object.values(musicianToPerformances).flat();
+      const concertPerfs = allPerfs.filter(sp => sp.recording_id === row.track.recording_id);
+      const playerTracks = concertPerfs
+        .slice()
+        .sort((a, b) => (a.offset_seconds || 0) - (b.offset_seconds || 0))
+        .map(sp => {
+          const spRagaObj = sp.raga_id ? ragas.find(r => r.id === sp.raga_id) : null;
+          return {
+            offset_seconds: sp.offset_seconds || 0,
+            display_title:  sp.display_title || '',
+            raga_id:        sp.raga_id || null,
+            raga_name:      spRagaObj ? spRagaObj.name : (sp.raga_id || ''),
+            tala:           sp.tala || null,
+            timestamp:      sp.timestamp || '00:00',
+          };
+        });
+      const concertTitle = row.track.short_title || row.track.concert_title;
+      openOrFocusPlayer(
+        row.track.vid,
+        row.track.label,
+        row.artistLabel,
+        row.track.offset_seconds || undefined,
+        concertTitle,
+        playerTracks
+      );
+    } else {
+      openOrFocusPlayer(row.track.vid, row.track.label, row.artistLabel, undefined);
+    }
   });
   row2Div.appendChild(trailPlayBtn);
 
