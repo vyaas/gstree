@@ -311,6 +311,10 @@ Nodes whose `wikipedia` field has no own article — flagged for community atten
 | `kanchipuram_naina_pillai` | disambig page | `Kanchipuram_Naina_Pillai` resolves but is a disambiguation — verify correct target |
 
 #### Lineage / data gaps
+- **Akkarai Subbulakshmi** (violin, contemporary) — node added 2026-04-12. Primary guru is
+  her father Akkarai Swaminathan (no Wikipedia page); also trained under V Janakiraman (no
+  Wikipedia page). Both gurus deferred until Wikipedia pages exist. 69 co-performer youtube
+  entries added to her node.
 - **T. Ranganathan** (mridangam, 1925–1987) — no Wikipedia article; excluded. Re-check
   periodically; if a page appears, add him under `golden_age` mridangam.
 - **Subbaraya Sastri dates** (set to 1803–1876) — verify against a primary source.

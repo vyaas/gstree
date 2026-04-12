@@ -1738,6 +1738,402 @@
         "instrument": "violin",
         "bani": "lalgudi",
         "youtube": []
+      },
+      {
+        "id": "akkarai_subbulakshmi",
+        "label": "Akkarai Subbulakshmi",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Akkarai_Subhalakshmi",
+            "label": "Wikipedia",
+            "type": "wikipedia"
+          }
+        ],
+        "born": null,
+        "died": null,
+        "era": "contemporary",
+        "instrument": "violin",
+        "bani": null,
+        "youtube": [
+          {
+            "url": "https://www.youtube.com/watch?v=AEbAgJK30Z8",
+            "label": "Emaanadicchevo · Sahana · Adi - TM Krishna, Karnatic Modern Mumbai 2016",
+            "composition_id": "emaanadicchevo",
+            "raga_id": "sahana",
+            "year": 2016
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=zGrDSEDeCI0",
+            "label": "TM Krishna: Ragam Mayamalavagaula"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=nuzjW5a--AU",
+            "label": "TM Krishna: Ragam Mukhari"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=5yZEsJDJ9yc",
+            "label": "Manavinaalakincha Raadate · Nalinakanthi - TM Krishna, Karnatic Modern Mumbai 2016",
+            "composition_id": "manavinaalakincha_raadate",
+            "raga_id": "nalinakanthi",
+            "year": 2016
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=x1pbtvX89Bk",
+            "label": "Gajavadhana · Thodi - TM Krishna, Essential TM Krishna Mumbai 2018",
+            "composition_id": "gajavadhana",
+            "raga_id": "thodi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=5eAPDJmmKOs",
+            "label": "TM Krishna: Raga Hamir Kalyani"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=AjESfMHTgjg",
+            "label": "TM Krishna: Raga Suruti-Shankarabharanam-Kapi-Ananda Bhairavi"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=o55TExI7Dbc",
+            "label": "TM Krishna: Raga Khamas"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=gPLyGjXcSkU",
+            "label": "Shri Viswanathan Bhajeham · Chaturdasa Ragamalika - TM Krishna, Essential TM Krishna Mumbai 2017",
+            "year": 2017
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=vpoMFE5hrsc",
+            "label": "TM Krishna: Raga Behag"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=zpFZwR27_m4",
+            "label": "TM Krishna: Aaguner Parashmoni Chhoao Praane"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=PdIy9531_fM",
+            "label": "TM Krishna: Manodharma II - A Lec-Dem Part 1"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=79ScPj4sE3Y",
+            "label": "TM Krishna: Manodharma II - A Lec-Dem Part 2"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=iDaanIHX30I",
+            "label": "TM Krishna: Manodharma II - A Lec-Dem Part 3"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=ErpI843IiG4",
+            "label": "TM Krishna: Manodharma II - A Lec-Dem Part 4"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=VJkrZf-jtZw",
+            "label": "Nee Matumme · Kapi - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "raga_id": "kapi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=f_zYXorgEPQ",
+            "label": "Sogasu Chooda · Kannada Gowla - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "sogasu_chooda",
+            "raga_id": "kannada_gowla",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=GU--BVt4D0k",
+            "label": "Krishna Nee Begane · Yamuna Kalyani - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "krishna_nee_begane",
+            "raga_id": "yamuna_kalyani",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=iQTs7PSnX3k",
+            "label": "Baro Krishnayya · Maund - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "baro_krishnayya",
+            "raga_id": "maund",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=zQ1qhf1Lr9s",
+            "label": "Tiruvatriyur Thyagarajan · Atana - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "tiruvatriyur_thyagarajan",
+            "raga_id": "atana",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=YFY7I2uyQSM",
+            "label": "Sri Venkata Girisa · Suruti - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "sri_venkata_girisa",
+            "raga_id": "suruti",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=tDaCYam087k",
+            "label": "Nenarunchara · Simhavahini - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "nenarunchara",
+            "raga_id": "simhavahini",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Aa_9UMNlxBk",
+            "label": "Shri Guruna Palitosmi · Padi - TM Krishna, Karnatic Modern II Mumbai 2018",
+            "composition_id": "shri_guruna_palitosmi",
+            "raga_id": "padi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=WknDE3b7Jjo",
+            "label": "Kamakshi · Varali - TM Krishna, Afghan Church Mumbai 2018",
+            "composition_id": "kamakshi_varali",
+            "raga_id": "varali",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=fuH3lZo0JsA",
+            "label": "Nadopasana · Begada - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
+            "composition_id": "nadopasana",
+            "raga_id": "begada",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Fqzy22zwjeY",
+            "label": "Bare Panduranga · Maund - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
+            "composition_id": "bare_panduranga",
+            "raga_id": "maund",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Bs9FiFwxvSQ",
+            "label": "Jagadodharana · Kapi - TM Krishna & Vikku Vinayakram, Afghan Church Mumbai 2018",
+            "composition_id": "jagadodharana",
+            "raga_id": "kapi",
+            "year": 2018
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=FauxpOMibu4",
+            "label": "TM Krishna feat. Vikku Vinayakram: Live at Afghan Church, Mumbai  - Raga Behag - Allahvai"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=__UaWGlMbaU",
+            "label": "TM Krishna: Raga Purvi"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=BIEzjDD3pvA",
+            "label": "maakElaraa vicāramu · Ravichandrika · Deshadi - TM Krishna",
+            "composition_id": "maakelara_vicaaramu",
+            "raga_id": "ravichandrika"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=j73jMamBZxU",
+            "label": "TM Krishna: Ragamalika"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=5MAI223JEVc",
+            "label": "Jagadananda Karaka · Nattai · Adi - TM Krishna",
+            "composition_id": "jagadananda_karaka",
+            "raga_id": "nata"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=T4cEp03lJcM",
+            "label": "Sri Ramachandra Kripalu · Yamuna Kalyani - TM Krishna, Parallel Lines Pune 2019",
+            "composition_id": "sri_ramachandra_kripalu",
+            "raga_id": "yamuna_kalyani",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=KDPPDB0rG70",
+            "label": "The Essential TM Krishna: Manodharma - Promo 5"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=ovgWK5aQcpM",
+            "label": "Amba Nilayatakshi · Neelambari - TM Krishna, Kolkata 2019",
+            "composition_id": "amba_nilayatakshi",
+            "raga_id": "neelambari",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Gkzru79jeT4",
+            "label": "Laavanya Rama Kannul Ara · Poorna Shadjam - TM Krishna, Kolkata 2019",
+            "composition_id": "laavanya_rama_kannul_ara",
+            "raga_id": "poornashadjam",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=3ZFVV64Or5g",
+            "label": "Kanaka Shaila Viharini · Punnagavarali - TM Krishna, Kolkata 2019",
+            "composition_id": "kanaka_shaila_viharini",
+            "raga_id": "punnagavarali",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=7A0YSVf-z3c",
+            "label": "Brocevarevarura · Khamas - TM Krishna, Kolkata 2019",
+            "composition_id": "brocevarevarura",
+            "raga_id": "khamas",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=v1g16qHvc74",
+            "label": "Jambu Pathe Mam Pahi · Yamuna Kalyani - TM Krishna, Kolkata 2019",
+            "composition_id": "jambu_pathe_mam_pahi",
+            "raga_id": "yamuna_kalyani",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=2-Hu2GXk6k8",
+            "label": "Saramaina Matalento · Behag - TM Krishna, Kolkata 2019",
+            "composition_id": "saramaina_matalento",
+            "raga_id": "behag",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=qd2XnI2qmGQ",
+            "label": "TM Krishna: Dhana Dhanya Pushpa Bhara"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=KYXuPI4wDHM",
+            "label": "Ni Mattume · Kapi - TM Krishna, Kolkata 2019",
+            "raga_id": "kapi",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=WJh305C0kAc",
+            "label": "TM Krishna: Vande Meenakshi Twam (Nottu Swara)"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=85LcNLhZNMU",
+            "label": "TM Krishna: Manodharma III - Part 2"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=qlq9EvFr8Uo",
+            "label": "TM Krishna: Manodharma III - Part 3"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=RccdN6suHUk",
+            "label": "TM Krishna: Manodharma III - Part 4"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=LchtvWC_BpE",
+            "label": "TM Krishna: Concert for Peace - Salatullah Salamullah"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=n63RJoxPzj8",
+            "label": "TM Krishna: Concert for Peace - Hebrew Psalm - Essa Einay El Heharim"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NocL9bp4vIY",
+            "label": "Teliyaleru Rama · Dhenuka - TM Krishna, Concert for Peace Mumbai 2019",
+            "composition_id": "teliyaleru_rama",
+            "raga_id": "dhenuka",
+            "year": 2019
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=vux5-s22v-s",
+            "label": "TM Krishna: Concert For Peace - Aag Bhayi Bandhu - Ragam Lalitha"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=jW4nuLVo7Fk",
+            "label": "TM Krishna: Concert For Peace - Hebrew Psalm - Hine Ma Tov Uma Na'im"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NRc9yvEex2Q",
+            "label": "Endaro Mahanubhavulu · Sri - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "endaro_mahanubhavulu",
+            "raga_id": "sriraga",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=8upNeiMEdVc",
+            "label": "Sri Matrubhutam · Kannada - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "sri_matrubhutam",
+            "raga_id": "kannada",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=F2TXcr1wAd4",
+            "label": "Chakkani Raja Margamu · Kharaharapriya - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "chakkani_raja_margamu",
+            "raga_id": "kharaharapriya",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=1Dp88V6m8Tw",
+            "label": "Jagadodharana · Kapi - TM Krishna, Aikya Mumbai 2020",
+            "composition_id": "jagadodharana",
+            "raga_id": "kapi",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=h6S9E2g6OA0",
+            "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: English Note-Ragam Shankarabharanam"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Bbh-_ZM8LzA",
+            "label": "TM Krishna w/ Sheik Mahaboob Subhani & Smt. Kaleeshabi Mahaboob: Mallari - Ragam Gambhira Nattai"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NfaWuqmljKM",
+            "label": "Muripemu Kalige · Mukhari - TM Krishna, Parallel Lines Bangalore 2020",
+            "composition_id": "muripemu_kalige",
+            "raga_id": "mukhari",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Es04SHxFae4",
+            "label": "Bhajare Re Chitta Balambikam · Kalyani - TM Krishna, Parallel Lines Bangalore 2020",
+            "composition_id": "bhajare_re_chitta_balambikam",
+            "raga_id": "kalyani",
+            "year": 2020
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=Wt8SfrWwzh4",
+            "label": "TM Krishna: 2 Thillanas in Ragam Khamas"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=j6gRDrvZGWk",
+            "label": "TM Krishna: Virutham - Pannen Unakkana + Poonguyil Koovum Poonjolayil"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=kh3pw3u8If8",
+            "label": "TM Krishna: Ragamalika + Ragam Darbari Kanada - Jaya Jaya Shankara"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=7x8-cde89Cg",
+            "label": "TM Krishna: Allah Megh De"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=0xBXnbsguKg",
+            "label": "TM Krishna: Esho Shyamolo Sundoro"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=rspIDApLZlE",
+            "label": "TM Krishna & The Jogappas: Live"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=u2hoAfGGe6g",
+            "label": "Guruleka Etuvanti · Gowrimanohari - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
+            "composition_id": "guruleka_etuvanti",
+            "raga_id": "gowrimanohari",
+            "year": 2025
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=NZlB2tgum10",
+            "label": "TM Krishna & Vikku Vinayakram: Ragam Hamirkalyani - Valudum Cherudum"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=sOVYyQL2Df0",
+            "label": "Muddugare Yashoda · Kurinji - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
+            "composition_id": "muddugare_yashoda",
+            "raga_id": "kurinji",
+            "year": 2025
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=B86oyObRYIY",
+            "label": "Sri Ramachandra Kripalu · Yaman Kalyan - TM Krishna & Vikku Vinayakram, Kerala Lit Fest 2025",
+            "composition_id": "sri_ramachandra_kripalu",
+            "raga_id": "yaman_kalyan",
+            "year": 2025
+          }
+        ]
       }
     ],
     "edges": [
