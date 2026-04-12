@@ -4,8 +4,8 @@ writer.py — Atomic write operations for musicians.json and compositions.json (
 
 CarnaticWriter provides stateless write methods. Each method:
   1. Reads the source file.
-  2. Validates inputs against current state (using CarnaticGraph for cross-file
-     referential integrity where required).
+  2. Validates inputs against current state (reading source files directly —
+     never graph.json, which is a derived artefact; see ADR-016).
   3. Applies the transformation.
   4. Writes atomically (temp file + os.replace).
   5. Returns a WriteResult(ok, skipped, message, log_prefix).
@@ -47,8 +47,6 @@ from typing import Any
 # ── path bootstrap (for direct script invocation) ──────────────────────────────
 if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from carnatic.graph_api import CarnaticGraph  # noqa: E402
 
 
 # ── constants ──────────────────────────────────────────────────────────────────
@@ -149,8 +147,9 @@ class CarnaticWriter:
 
     Each method:
       1. Reads the source file.
-      2. Validates inputs against current state (using CarnaticGraph for
-         cross-file referential integrity).
+      2. Validates inputs against current state by reading source files
+         directly (musicians.json / compositions.json). graph.json is a
+         derived artefact and is never read here — see ADR-016.
       3. Applies the transformation.
       4. Writes atomically (temp file + rename).
       5. Returns a WriteResult(ok, skipped, message, log_prefix).
@@ -159,10 +158,6 @@ class CarnaticWriter:
     sequentially (each call holds the file for the duration of its
     read-transform-write cycle only).
     """
-
-    def _load_graph(self, graph_path: Path | None = None) -> CarnaticGraph:
-        p = graph_path or _default_graph_path()
-        return CarnaticGraph(p)
 
     # ── Group 1: Musician graph writes ────────────────────────────────────────
 
@@ -290,35 +285,42 @@ class CarnaticWriter:
         raga_id: str | None = None,
         year: int | None = None,
         version: str | None = None,
-        graph_path: Path | None = None,
+        compositions_path: Path | None = None,
     ) -> WriteResult:
         """Append a YouTube recording entry to a musician node's youtube[] array."""
         video_id = _yt_video_id(url)
         if not video_id:
             return _err(f"could not extract 11-char video ID from URL: {url}")
 
-        # Cross-file referential integrity via graph.json
-        g = self._load_graph(graph_path)
-
-        if g.get_musician(musician_id) is None:
-            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
-
-        if composition_id is not None and g.get_composition(composition_id) is None:
-            return _err(
-                f"--composition-id \"{composition_id}\" does not exist in compositions.json\n"
-                f"       Run render.py after add-composition before referencing it here."
-            )
-
-        if raga_id is not None and g.get_raga(raga_id) is None:
-            return _err(
-                f"--raga-id \"{raga_id}\" does not exist in compositions.json\n"
-                f"       Run render.py after add-raga before referencing it here."
-            )
-
+        # Read musicians.json once — used for both validation and write (ADR-016)
         data = json.loads(musicians_path.read_text(encoding="utf-8"))
         nodes: list[dict] = data.get("nodes", [])
 
-        # Find the node
+        # Validate musician_id directly from the file being written
+        known_musician_ids = {n["id"] for n in nodes}
+        if musician_id not in known_musician_ids:
+            return _err(f"musician_id \"{musician_id}\" does not exist in nodes[]")
+
+        # Validate composition_id / raga_id directly from compositions.json (ADR-016)
+        if composition_id is not None or raga_id is not None:
+            comp_path = compositions_path or _default_compositions_path()
+            comp_data = json.loads(comp_path.read_text(encoding="utf-8"))
+            if composition_id is not None:
+                known_comp_ids = {c["id"] for c in comp_data.get("compositions", [])}
+                if composition_id not in known_comp_ids:
+                    return _err(
+                        f"--composition-id \"{composition_id}\" does not exist in compositions.json\n"
+                        f"       Run add-composition before referencing it here."
+                    )
+            if raga_id is not None:
+                known_raga_ids = {r["id"] for r in comp_data.get("ragas", [])}
+                if raga_id not in known_raga_ids:
+                    return _err(
+                        f"--raga-id \"{raga_id}\" does not exist in compositions.json\n"
+                        f"       Run add-raga before referencing it here."
+                    )
+
+        # Find the node (already loaded above)
         node = next((n for n in nodes if n["id"] == musician_id), None)
         if node is None:
             return _err(f"musician_id \"{musician_id}\" not found in musicians.json")
@@ -570,7 +572,6 @@ class CarnaticWriter:
         born: int | None = None,
         died: int | None = None,
         musicians_path: Path | None = None,
-        graph_path: Path | None = None,
     ) -> WriteResult:
         """Add a new composer to compositions.json."""
         if source_type not in VALID_SOURCE_TYPES:
@@ -579,10 +580,12 @@ class CarnaticWriter:
                 f"       Valid values: {', '.join(sorted(VALID_SOURCE_TYPES))}"
             )
 
-        # Validate musician_node_id cross-file if given
+        # Validate musician_node_id directly from musicians.json (ADR-016)
         if musician_node_id is not None:
-            g = self._load_graph(graph_path)
-            if g.get_musician(musician_node_id) is None:
+            m_path = musicians_path or _default_musicians_path()
+            m_data = json.loads(m_path.read_text(encoding="utf-8"))
+            known_ids = {n["id"] for n in m_data.get("nodes", [])}
+            if musician_node_id not in known_ids:
                 return _err(
                     f"--musician-node-id \"{musician_node_id}\" does not exist in musicians.json"
                 )

@@ -137,7 +137,7 @@ def cmd_add_youtube(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult:
         raga_id=args.raga_id,
         year=year,
         version=args.version,
-        graph_path=_graph_path(),
+        compositions_path=_compositions_path(),
     )
 
 
@@ -214,7 +214,6 @@ def cmd_add_composer(w: CarnaticWriter, args: argparse.Namespace) -> WriteResult
         born=born,
         died=died,
         musicians_path=_musicians_path(),
-        graph_path=_graph_path(),
     )
 
 

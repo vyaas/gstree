@@ -2191,9 +2191,59 @@ function makeDropdown(inputEl, dropdownEl, getItems, onSelect) {{
 </html>
 """
 
+# ── sync helper (ADR-016) ──────────────────────────────────────────────────────
+
+def _sync_graph_json(
+    graph_file: Path,
+    musicians_file: Path,
+    compositions_file: Path,
+) -> None:
+    """
+    Sync graph.json["musicians"] and graph.json["compositions"] from the
+    canonical source files before rendering.
+
+    This is the single sync point that keeps graph.json current for traversal
+    and rendering (ADR-016). Idempotent: safe to call on every render.py
+    invocation. Atomic: writes via temp file + os.replace.
+    """
+    import os as _os
+    import tempfile as _tempfile
+
+    graph = json.loads(graph_file.read_text(encoding="utf-8"))
+
+    if musicians_file.exists():
+        m = json.loads(musicians_file.read_text(encoding="utf-8"))
+        graph["musicians"] = {
+            "nodes": m.get("nodes", []),
+            "edges": m.get("edges", []),
+        }
+
+    if compositions_file.exists():
+        c = json.loads(compositions_file.read_text(encoding="utf-8"))
+        graph["compositions"] = {
+            "ragas":        c.get("ragas", []),
+            "composers":    c.get("composers", []),
+            "compositions": c.get("compositions", []),
+        }
+
+    text = json.dumps(graph, indent=2, ensure_ascii=False) + "\n"
+    dir_ = graph_file.parent
+    with _tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", dir=dir_, suffix=".tmp", delete=False
+    ) as f:
+        f.write(text)
+        tmp = Path(f.name)
+    _os.replace(tmp, graph_file)
+    print(f"[SYNC] graph.json ← musicians.json + compositions.json")
+
+
 # ── entry point ────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    # ── Step 0: sync graph.json from source files (ADR-016) ──────────────────
+    if GRAPH_FILE.exists() and DATA_FILE.exists():
+        _sync_graph_json(GRAPH_FILE, DATA_FILE, COMPOSITIONS_FILE)
+
     # ── ADR-013: load from graph.json via CarnaticGraph; fall back to legacy files ──
     if GRAPH_FILE.exists():
         # Ensure project root is on sys.path so the import works whether

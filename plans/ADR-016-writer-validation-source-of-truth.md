@@ -1,6 +1,6 @@
 # ADR-016: CarnaticWriter Validation Must Read Source Files, Not graph.json
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-12
 
 ---
