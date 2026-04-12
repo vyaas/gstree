@@ -354,6 +354,10 @@ Entries are terse — this is a log, not an essay.
 - 2026-04-12: ADR-018 concert brackets: group structuredPerfs by recording_id→session_index client-side in buildRecordingsList; the PerformanceRef shape already carries all needed fields — no schema change required, only the rendering layer changes.
 - 2026-04-12: ADR-022 janyas dropdown: use a filter input + renderJanyaList() closure pattern rather than a static flex-wrap — the closure captures the sorted janyas array and re-renders the list on every oninput event; toggling the panel resets the filter and re-focuses the input for immediate typing.
 
+- 2026-04-12: ADR-023 raga wheel (third view): SVG z-order is DOM order — the only reliable way to keep all text above all circles is a module-level _labelLayer <g> that is re-appended as the last child of the viewport after every expansion step via _bringLabelsToFront(vp); never put labels inside their node <g>.
+- 2026-04-12: ADR-023 label cleanup on collapse: use two CSS classes — sat-label (all satellite labels) and sat-label-musc (musician tier only) — so the janya click handler can clear comp+musc labels while the comp click handler clears only musc labels, without disturbing the layers above.
+- 2026-04-12: ADR-023 mela compositions: _expandComps accepts any raga object (not just janyas), so calling it directly with the mela raga after _expandMela draws janyas gives mela ragas their own composition layer without any code duplication.
+
 ### 🏛️ Graph Architect
 
 - 2026-04-12: ADR-023 proposes the raga wheel as a third view (SVG, not Cytoscape) — the circle is fixed geometry derived from the melakarta reference image; outer layers (janyas, compositions, musicians) emanate on demand via click; the three-way view selector replaces the binary Graph/Timeline toggle; no schema change required — all data is already present after ADR-021 migration; musician nodes bridge both views via triggerBaniSearch.
